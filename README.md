@@ -3,6 +3,10 @@
 ![image](https://user-images.githubusercontent.com/13203059/163527232-91f5d9e5-7bd0-4ca4-a251-c22e0419876e.png)
 
 
+# CLaaT Document
+
+[Access the Claat document here](https://codelabs-preview.appspot.com/?file_id=1O_eeM-wOY7rFtn7uUnLgebKkyjFOC_nIrbewg-zlcqQ#10) 🚀
+
 # Overview 📝
 
 We use automated recommender systems everywhere in our day-to -day lives,be it the TV show to binge watch on Netflix, playlists on Youtube or Job recommendations on LinkedIn. In the same space we have recommender systems in music applications as well - Spotify, FreeSound,Songkick to name a few. As part of an academic project for course Big Data Systems & Intelligence Analytics we will build a data pipeline based on a similar idea, wherein we will use pre trained model inference to suggest users recommended music playlists that suit their interests.
