@@ -5,7 +5,7 @@
 
 # CLaaT Document
 
-[Access the Claat document here](https://codelabs-preview.appspot.com/?file_id=1O_eeM-wOY7rFtn7uUnLgebKkyjFOC_nIrbewg-zlcqQ#10) 🚀
+[Access the Claat document here](https://codelabs-preview.appspot.com/?file_id=12z0C4Hw5840SwWBf6vqpAS81ir7TEm-NcLhjHyZOQW4#7) 🚀
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/kshitijzutshi/DAMG7245-Final-Project)
 
