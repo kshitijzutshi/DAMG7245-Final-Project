@@ -68,11 +68,6 @@ Tools for Analysis : Visual Studio code.
 Streamlit, airflow
 
 
-# Architecture
-
-![image](https://user-images.githubusercontent.com/13203059/163527558-f0e7b54c-0ea8-4693-ab89-fbeb00472c9d.png)
-
-
 # User Interface Design Plan
 
 User Interface will be built using Streamlit and deployed on streamlit cloud.
