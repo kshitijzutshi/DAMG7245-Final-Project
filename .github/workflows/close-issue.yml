@@ -1,0 +1,23 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Close Issue on comment
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  issue_comment:
+    types:
+      - created
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  close-issue-on-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.comment.body == 'close issue'}}
+    steps:
+      - name: Close Issue
+        uses: peter-evans/close-issue@v2
+        with:
+          comment: |
+            Issue comment suggests to close.
+            Auto-closing this issue.
