@@ -67,6 +67,13 @@ Cloud Tools : Google Cloud Storage, Amazon Web Services
 Tools for Analysis : Visual Studio code.
 Streamlit, airflow
 
+# Github Actions - Workflows
+
+1. Close an Issue if the comment says "close issue"
+
+![close-issue-actions](https://user-images.githubusercontent.com/13203059/165130958-945f07cb-cfc2-43c2-a40f-7f5e790b8c25.gif)
+
+
 
 # User Interface Design Plan
 
