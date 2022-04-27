@@ -17,6 +17,7 @@ jobs:
           python-version: 3.8 #install the python needed
       - name: execute py script # run the run.py to get the latest data
         run: |
+          pip install spotipy==2.19.0 python-decouple
           python avg_album_length_playlist.py
         env:
           SPOTIPY_CLIENT_ID:   ${{ secrets.SPOTIPY_CLIENT_ID }}

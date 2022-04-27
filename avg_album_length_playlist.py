@@ -1,7 +1,7 @@
 import spotipy
 import csv
-import boto3
-from datetime import datetime
+# import boto3
+# from datetime import datetime
 import os
 import pandas as pd
 import pickle, gzip, urllib, json
@@ -130,61 +130,61 @@ def gather_data_local():
     return final_data_dictionary
 
 
-def gather_data():
-#     s3_client = boto3.client('s3')
-    data_bucket_name='music-rec-data'
-    # For every artist we're looking for
-    with open("/tmp/top10_tracks.csv", 'w') as file:
-        header = ['track_name','track_id', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness','liveness', 'valence', 'tempo', 'duration_ms', 'time_signature']
+# def gather_data():
+# #     s3_client = boto3.client('s3')
+#     data_bucket_name='music-rec-data'
+#     # For every artist we're looking for
+#     with open("/tmp/top10_tracks.csv", 'w') as file:
+#         header = ['track_name','track_id', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness','liveness', 'valence', 'tempo', 'duration_ms', 'time_signature']
 
-        writer = csv.DictWriter(file, fieldnames=header)
-        writer.writeheader()
-        audio_features = get_audio_features(spotify_playlists()[PLAYLIST])
-        for track in audio_features.keys():
-            writer.writerow({
-                'track_name': 'track_'+str(audio_features[track][0]['id']),
-                'track_id': audio_features[track][0]['id'],
-                'danceability': audio_features[track][0]['danceability'],
-                'energy': audio_features[track][0]['energy'],
-                'key': audio_features[track][0]['key'],
-                'loudness': audio_features[track][0]['loudness'],
-                'mode': audio_features[track][0]['mode'],
-                'speechiness': audio_features[track][0]['speechiness'],
-                'acousticness': audio_features[track][0]['acousticness'],
-                'instrumentalness': audio_features[track][0]['instrumentalness'],
-                'liveness': audio_features[track][0]['liveness'],
-                'valence': audio_features[track][0]['valence'],
-                'tempo': audio_features[track][0]['tempo'],
-                'duration_ms': audio_features[track][0]['duration_ms'],
-                'time_signature': audio_features[track][0]['time_signature']
-                })
-
-
-            # artists_albums = spotipy_object.artist_albums(artist, album_type='album', limit=50)
-            # # For all of their albums
-            # for album in artists_albums['items']:
-            #     if 'GB' in artists_albums['items'][0]['available_markets']:
-            #         album_data = spotipy_object.album(album['uri'])
-            #         # For every song in the album
-            #         album_length_ms = 0
-            #         for song in album_data['tracks']['items']:
-            #             # TODO consider album popularity
-            #             album_length_ms = song['duration_ms'] + album_length_ms
-            #         writer.writerow({'Year Released': album_data['release_date'][:4],
-            #                          'Album Length': album_length_ms,
-            #                          'Album Name': album_data['name'],
-            #                          'Artist': album_data['artists'][0]['name']})
-
-    s3_resource = boto3.resource('s3')
-    date = datetime.now()
-    filename = f'{date.year}/{date.month}/{date.day}/top10_tracks.csv'
-    response = s3_resource.Object(Bucket=data_bucket_name, Key=filename).upload_file("top10_tracks.csv")
-
-    return response
+#         writer = csv.DictWriter(file, fieldnames=header)
+#         writer.writeheader()
+#         audio_features = get_audio_features(spotify_playlists()[PLAYLIST])
+#         for track in audio_features.keys():
+#             writer.writerow({
+#                 'track_name': 'track_'+str(audio_features[track][0]['id']),
+#                 'track_id': audio_features[track][0]['id'],
+#                 'danceability': audio_features[track][0]['danceability'],
+#                 'energy': audio_features[track][0]['energy'],
+#                 'key': audio_features[track][0]['key'],
+#                 'loudness': audio_features[track][0]['loudness'],
+#                 'mode': audio_features[track][0]['mode'],
+#                 'speechiness': audio_features[track][0]['speechiness'],
+#                 'acousticness': audio_features[track][0]['acousticness'],
+#                 'instrumentalness': audio_features[track][0]['instrumentalness'],
+#                 'liveness': audio_features[track][0]['liveness'],
+#                 'valence': audio_features[track][0]['valence'],
+#                 'tempo': audio_features[track][0]['tempo'],
+#                 'duration_ms': audio_features[track][0]['duration_ms'],
+#                 'time_signature': audio_features[track][0]['time_signature']
+#                 })
 
 
-def lambda_handler(event, context):
-    gather_data()
+#             # artists_albums = spotipy_object.artist_albums(artist, album_type='album', limit=50)
+#             # # For all of their albums
+#             # for album in artists_albums['items']:
+#             #     if 'GB' in artists_albums['items'][0]['available_markets']:
+#             #         album_data = spotipy_object.album(album['uri'])
+#             #         # For every song in the album
+#             #         album_length_ms = 0
+#             #         for song in album_data['tracks']['items']:
+#             #             # TODO consider album popularity
+#             #             album_length_ms = song['duration_ms'] + album_length_ms
+#             #         writer.writerow({'Year Released': album_data['release_date'][:4],
+#             #                          'Album Length': album_length_ms,
+#             #                          'Album Name': album_data['name'],
+#             #                          'Artist': album_data['artists'][0]['name']})
+
+#     s3_resource = boto3.resource('s3')
+#     date = datetime.now()
+#     filename = f'{date.year}/{date.month}/{date.day}/top10_tracks.csv'
+#     response = s3_resource.Object(Bucket=data_bucket_name, Key=filename).upload_file("top10_tracks.csv")
+
+#     return response
+
+
+# def lambda_handler(event, context):
+#     gather_data()
 
 
 if __name__ == '__main__':
