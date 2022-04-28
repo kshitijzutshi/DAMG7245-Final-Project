@@ -58,12 +58,12 @@ log_filename = os.path.join(cwd, 'data', 'read_spotify_mpd_log.txt')
 feedback_db_file = os.path.join(cwd, 'data', 'user_feedback.db')
 
 # Pickled models
-model_path = os.path.join(cwd, 'models', 'KMeans_K17_20000_sample_model.sav')
-tsne_path = os.path.join(cwd, 'models', 'openTSNETransformer.sav')
-scaler_path = os.path.join(cwd, 'models', 'StdScaler.sav')
-playlists_db_path = os.path.join(cwd, 'data', 'spotify_20K_playlists.db')
-train_data_scaled_path = os.path.join(cwd, 'data' , 'scaled_data.csv')
-openTSNE_path = os.path.join(cwd, 'data' , 'openTSNE_20000.csv')
+model_path = '../model/KMeans_K17_20000_sample_model.sav'
+tsne_path = '../model/openTSNETransformer.sav'
+scaler_path = '../model/StdScaler.sav'
+playlists_db_path = '../data/spotify_20K_playlists.db'
+train_data_scaled_path = '../data/scaled_data.csv'
+openTSNE_path = '../data/openTSNE_20000.csv'
 
 def get_public_ip():
     try:

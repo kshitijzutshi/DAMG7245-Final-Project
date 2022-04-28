@@ -123,6 +123,9 @@ if 'user_op' not in st.session_state:
 def update_user_option():
     st.session_state.user_op = st.session_state.user_selection
 
+if 'ml_model' not in st.session_state:
+    st.session_state.ml_model = None
+
 if 'response_url' not in st.session_state:
     st.session_state.response_url = ''
 def init_sp():
@@ -159,6 +162,195 @@ def add_feedback(feedback):
     del feedback_db
     st.session_state.got_feedback = True
 
+def playlist_page():
+    st.subheader("User Playlist")
+    st.markdown('---')
+    playlist_uri = st.session_state.playlist_url.split('/')[-1].split('?')[0]
+    uri_link = 'https://open.spotify.com/embed/playlist/' + playlist_uri
+    components.iframe(uri_link, height=300)
+    return
+
+def get_recommendations(rec_type):
+    st.session_state.got_rec = False
+    st.session_state.got_feedback = False
+    st.session_state.app_mode = 'recommend'
+    st.session_state.rec_type = rec_type
+
+def insert_songs(placeholder, track_uris):
+    with placeholder.container():
+        for uri in track_uris:
+            uri_link = "https://open.spotify.com/embed/track/" + uri + "?utm_source=generator&theme=0"
+            components.iframe(uri_link, height=80)
+
+
+def log_output(new_text):
+    new_log = st.session_state.output
+    if new_text != 'None':
+        new_log = new_text + '\n' + st.session_state.output
+    if st.session_state.display_output:
+        st.session_state.output = st.session_state.log_holder.text_area('',value=new_log, height=500)
+
+def load_spr_ml_model():
+    st.session_state.ml_model = SPR_ML_Model()
+
+
+def model_page():
+    st.subheader("Select your preference")
+    Types_of_Features = ("Playlist", "Song")
+    st.session_state.user_selection = st.session_state.user_op
+    st.radio("Feature", Types_of_Features, key='user_selection', on_change=update_user_option)
+
+    if st.session_state.user_selection == "Playlist":
+        st.session_state.playlist_url = st.session_state.example_url
+        st.text_input("Playlist URI", key='playlist_url', on_change=update_playlist_url)
+        playlist_uri = st.session_state.playlist_url.split('/')[-1]
+        st.session_state.spr = SpotifyRecommendations(playlist_uri=playlist_uri)
+        st.session_state.spr.log_output = log_output
+        playlist_page()
+        st.markdown("<br>", unsafe_allow_html=True)
+        get_rec = st.button("Get Recommendations", key='pl', on_click=get_recommendations, args=('playlist',))
+        
+        if get_rec:
+            if st.session_state.rec_type == 'playlist':
+                st.subheader('Recommendations based on Playlist:')
+
+            status_holder = st.empty()
+            rec_songsholder = st.empty()
+            user_fbholder = st.empty()
+
+            left_column, middle_column, right_column = st.columns(3)
+            with left_column:
+                fb_plotholder = st.empty()
+            with middle_column:
+                playlist_wordcloud_holder = st.empty()
+                user_cluster_all_holder = st.empty()
+                
+            with right_column:
+                genre_wordcloud_holder = st.empty()
+                user_cluster_single_holder = st.empty()
+            if st.session_state.ml_model is None:
+                with status_holder:
+                    with st.spinner('Loading ML Model...'):
+                        load_spr_ml_model()
+                    st.success('ML Model Loaded!')
+            else:
+                log_output('ML model is already loaded')
+            
+            if st.session_state.got_rec == False:
+                spr = st.session_state.spr
+                spr.set_ml_model(st.session_state.ml_model)
+                with status_holder:
+                    with st.spinner('Getting Recommendations...'):
+                        spr.len_of_favs = st.session_state.rec_type
+                        spr.log_output = log_output
+                        st.session_state.rec_uris = spr.get_songs_recommendations(n=10)
+                        # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
+                        # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
+                        st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
+                        st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
+                        st.session_state.got_rec = True
+                    st.success('Here are top 10 recommendations!')
+            else:
+                log_output('Showing already found recommendations')
+
+            insert_songs(rec_songsholder, st.session_state.rec_uris)
+
+
+
+        with st.expander("Here's how to find any Playlist URL in Spotify"):
+            st.write(""" 
+                - Search for Playlist on the Spotify app
+                - Right Click on the Playlist you like
+                - Click "Share"
+                - Choose "Copy link to playlist"
+            """)
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.image('./assets/images/spotify_get_playlist_uri.png')
+
+
+def rec_page():
+    if 'spr' not in st.session_state:
+        st.error('Please select an option in User Input page')
+        return
+    
+    if st.session_state.rec_type == 'playlist':
+        st.subheader('Recommendations based on Playlist:')
+    elif st.session_state.rec_type == 'last_month':
+        st.subheader('Recommendations based on your Last Month Favorites:')
+    elif st.session_state.rec_type == '6_months':
+        st.subheader('Recommendations based on your Six Months Favorites:')
+    else:
+        st.subheader('Recommendations based on your All Time Favorites:')
+    status_holder = st.empty()
+    rec_songsholder = st.empty()
+    user_fbholder = st.empty()
+
+    left_column, middle_column, right_column = st.columns(3)
+    with left_column:
+        fb_plotholder = st.empty()
+    with middle_column:
+        playlist_wordcloud_holder = st.empty()
+        user_cluster_all_holder = st.empty()
+        
+    with right_column:
+        genre_wordcloud_holder = st.empty()
+        user_cluster_single_holder = st.empty()
+    if st.session_state.ml_model is None:
+        with status_holder:
+            with st.spinner('Loading ML Model...'):
+                load_spr_ml_model()
+            st.success('ML Model Loaded!')
+    else:
+        log_output('ML Model already loaded')
+    
+    if st.session_state.got_rec == False:
+        spr = st.session_state.spr
+        spr.set_ml_model(st.session_state.ml_model)
+        with status_holder:
+            with st.spinner('Getting Recommendations...'):
+                spr.len_of_favs = st.session_state.rec_type
+                spr.log_output = log_output
+                st.session_state.rec_uris = spr.get_songs_recommendations(n=10)
+                # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
+                # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
+                st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
+                st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
+                st.session_state.got_rec = True
+            st.success('Here are top 10 recommendations!')
+    else:
+        log_output('Showing already found recommendations')
+
+    insert_songs(rec_songsholder, st.session_state.rec_uris)
+
+    if st.session_state.got_feedback == False:
+        with user_fbholder:
+            c1, c2, c3, c4 = st.columns((1, 1, 1, 1))
+            with c1:
+                st.button("Love it", key='love', on_click=add_feedback, args=('Love it',))
+            with c2:
+                st.button("Like it", key='like', on_click=add_feedback, args=('Like it',))
+            with c3:
+                st.button("Okay", key='okay', on_click=add_feedback, args=('Okay',))
+            with c4:
+                st.button("Hate it", key='hate', on_click=add_feedback, args=('Hate it',))
+
+    with fb_plotholder:
+        try:
+            feedback_db = User_FeedbackDB()
+            fig = feedback_db.get_feedback_plot()
+            del feedback_db
+            if fig:
+                st.subheader('User Feedback:')
+                st.plotly_chart(fig, use_container_width=True)
+        except:
+            pass
+
+    # genre_wordcloud_holder.pyplot(st.session_state.genre_wordcloud_fig)
+    # playlist_wordcloud_holder.pyplot(st.session_state.playlist_wordcloud_fig)
+    user_cluster_all_holder.pyplot(st.session_state.user_cluster_all_fig)
+    user_cluster_single_holder.pyplot(st.session_state.user_cluster_single_fig)
+
+
 #def spr_sidebar():
 with st.sidebar:
     #model_button = st.button('Recommendation')
@@ -173,6 +365,9 @@ with st.sidebar:
         "nav-link-selected": {"background-color": "#181818"},
     }
     )
+    st.checkbox('Display Output', True, key='display_output')
+    st.session_state.log_holder = st.empty()
+    log_output('None')
 # if choose == "Recommendations":
 #             st.session_state.app_mode = 'model'
 
@@ -370,6 +565,8 @@ elif choose == "Model":
 
 elif choose == "Recommendations":
     st.session_state.app_mode = 'model'
+    if st.session_state.app_mode == 'model':
+        model_page()
     #st.session_state.app_mode = 'recommend'
     # st.markdown(""" <style> .font {
     # font-size:35px ; font-family: 'Cooper Black'; color: #FF9633;} 
@@ -433,161 +630,161 @@ elif choose == "Conclusions":
         if submitted:
             st.write('Thanks for your contacting us. We will respond to your questions or inquiries as soon as possible!')
 
-def playlist_page():
-    st.subheader("User Playlist")
-    st.markdown('---')
-    playlist_uri = st.session_state.playlist_url.split('/')[-1].split('?')[0]
-    uri_link = 'https://open.spotify.com/embed/playlist/' + playlist_uri
-    components.iframe(uri_link, height=300)
-    return
+# def playlist_page():
+#     st.subheader("User Playlist")
+#     st.markdown('---')
+#     playlist_uri = st.session_state.playlist_url.split('/')[-1].split('?')[0]
+#     uri_link = 'https://open.spotify.com/embed/playlist/' + playlist_uri
+#     components.iframe(uri_link, height=300)
+#     return
 
-def get_recommendations(rec_type):
-    st.session_state.got_rec = False
-    st.session_state.got_feedback = False
-    st.session_state.app_mode = 'recommend'
-    st.session_state.rec_type = rec_type
+# def get_recommendations(rec_type):
+#     st.session_state.got_rec = False
+#     st.session_state.got_feedback = False
+#     st.session_state.app_mode = 'recommend'
+#     st.session_state.rec_type = rec_type
 
-def insert_songs(placeholder, track_uris):
-    with placeholder.container():
-        for uri in track_uris:
-            uri_link = "https://open.spotify.com/embed/track/" + uri + "?utm_source=generator&theme=0"
-            components.iframe(uri_link, height=80)
-
-
-def log_output(new_text):
-    new_log = st.session_state.output
-    if new_text != 'None':
-        new_log = new_text + '\n' + st.session_state.output
-    if st.session_state.display_output:
-        st.session_state.output = st.session_state.log_holder.text_area('',value=new_log, height=500)
-
-def load_spr_ml_model():
-    st.session_state.ml_model = SPR_ML_Model()
+# def insert_songs(placeholder, track_uris):
+#     with placeholder.container():
+#         for uri in track_uris:
+#             uri_link = "https://open.spotify.com/embed/track/" + uri + "?utm_source=generator&theme=0"
+#             components.iframe(uri_link, height=80)
 
 
-def model_page():
-    st.subheader("Select your preference")
-    Types_of_Features = ("Playlist", "Song")
-    st.session_state.user_selection = st.session_state.user_op
-    st.radio("Feature", Types_of_Features, key='user_selection', on_change=update_user_option)
+# def log_output(new_text):
+#     new_log = st.session_state.output
+#     if new_text != 'None':
+#         new_log = new_text + '\n' + st.session_state.output
+#     if st.session_state.display_output:
+#         st.session_state.output = st.session_state.log_holder.text_area('',value=new_log, height=500)
 
-    if st.session_state.user_selection == "Playlist":
-        st.session_state.playlist_url = st.session_state.example_url
-        st.text_input("Playlist URI", key='playlist_url', on_change=update_playlist_url)
-        playlist_uri = st.session_state.playlist_url.split('/')[-1]
-        st.session_state.spr = SpotifyRecommendations(playlist_uri=playlist_uri)
-        st.session_state.spr.log_output = log_output
-        playlist_page()
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.button("Get Recommendations", key='pl', on_click=get_recommendations, args=('playlist',))
-        with st.expander("Here's how to find any Playlist URL in Spotify"):
-            st.write(""" 
-                - Search for Playlist on the Spotify app
-                - Right Click on the Playlist you like
-                - Click "Share"
-                - Choose "Copy link to playlist"
-            """)
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.image(os.path.join(cwd, 'images', 'spotify_get_playlist_uri.png'))
+# def load_spr_ml_model():
+#     st.session_state.ml_model = SPR_ML_Model()
 
 
-def rec_page():
-    if 'spr' not in st.session_state:
-        st.error('Please select an option in User Input page')
-        return
+# def model_page():
+#     st.subheader("Select your preference")
+#     Types_of_Features = ("Playlist", "Song")
+#     st.session_state.user_selection = st.session_state.user_op
+#     st.radio("Feature", Types_of_Features, key='user_selection', on_change=update_user_option)
+
+#     if st.session_state.user_selection == "Playlist":
+#         st.session_state.playlist_url = st.session_state.example_url
+#         st.text_input("Playlist URI", key='playlist_url', on_change=update_playlist_url)
+#         playlist_uri = st.session_state.playlist_url.split('/')[-1]
+#         st.session_state.spr = SpotifyRecommendations(playlist_uri=playlist_uri)
+#         st.session_state.spr.log_output = log_output
+#         playlist_page()
+#         st.markdown("<br>", unsafe_allow_html=True)
+#         st.button("Get Recommendations", key='pl', on_click=get_recommendations, args=('playlist',))
+#         with st.expander("Here's how to find any Playlist URL in Spotify"):
+#             st.write(""" 
+#                 - Search for Playlist on the Spotify app
+#                 - Right Click on the Playlist you like
+#                 - Click "Share"
+#                 - Choose "Copy link to playlist"
+#             """)
+#             st.markdown("<br>", unsafe_allow_html=True)
+#             st.image(os.path.join(cwd, 'assets/images', 'spotify_get_playlist_uri.png'))
+
+
+# def rec_page():
+#     if 'spr' not in st.session_state:
+#         st.error('Please select an option in User Input page')
+#         return
     
-    if st.session_state.rec_type == 'playlist':
-        st.subheader('Recommendations based on Playlist:')
-    elif st.session_state.rec_type == 'last_month':
-        st.subheader('Recommendations based on your Last Month Favorites:')
-    elif st.session_state.rec_type == '6_months':
-        st.subheader('Recommendations based on your Six Months Favorites:')
-    else:
-        st.subheader('Recommendations based on your All Time Favorites:')
-    status_holder = st.empty()
-    rec_songsholder = st.empty()
-    user_fbholder = st.empty()
+#     if st.session_state.rec_type == 'playlist':
+#         st.subheader('Recommendations based on Playlist:')
+#     elif st.session_state.rec_type == 'last_month':
+#         st.subheader('Recommendations based on your Last Month Favorites:')
+#     elif st.session_state.rec_type == '6_months':
+#         st.subheader('Recommendations based on your Six Months Favorites:')
+#     else:
+#         st.subheader('Recommendations based on your All Time Favorites:')
+#     status_holder = st.empty()
+#     rec_songsholder = st.empty()
+#     user_fbholder = st.empty()
 
-    left_column, middle_column, right_column = st.columns(3)
-    with left_column:
-        fb_plotholder = st.empty()
-    with middle_column:
-        playlist_wordcloud_holder = st.empty()
-        user_cluster_all_holder = st.empty()
+#     left_column, middle_column, right_column = st.columns(3)
+#     with left_column:
+#         fb_plotholder = st.empty()
+#     with middle_column:
+#         playlist_wordcloud_holder = st.empty()
+#         user_cluster_all_holder = st.empty()
         
-    with right_column:
-        genre_wordcloud_holder = st.empty()
-        user_cluster_single_holder = st.empty()
-    if st.session_state.ml_model is None:
-        with status_holder:
-            with st.spinner('Loading ML Model...'):
-                load_spr_ml_model()
-            st.success('ML Model Loaded!')
-    else:
-        log_output('ML Model already loaded')
+#     with right_column:
+#         genre_wordcloud_holder = st.empty()
+#         user_cluster_single_holder = st.empty()
+#     if st.session_state.ml_model is None:
+#         with status_holder:
+#             with st.spinner('Loading ML Model...'):
+#                 load_spr_ml_model()
+#             st.success('ML Model Loaded!')
+#     else:
+#         log_output('ML Model already loaded')
     
-    if st.session_state.got_rec == False:
-        spr = st.session_state.spr
-        spr.set_ml_model(st.session_state.ml_model)
-        with status_holder:
-            with st.spinner('Getting Recommendations...'):
-                spr.len_of_favs = st.session_state.rec_type
-                spr.log_output = log_output
-                st.session_state.rec_uris = spr.get_songs_recommendations(n=10)
-                # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
-                # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
-                st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
-                st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
-                st.session_state.got_rec = True
-            st.success('Here are top 10 recommendations!')
-    else:
-        log_output('Showing already found recommendations')
+#     if st.session_state.got_rec == False:
+#         spr = st.session_state.spr
+#         spr.set_ml_model(st.session_state.ml_model)
+#         with status_holder:
+#             with st.spinner('Getting Recommendations...'):
+#                 spr.len_of_favs = st.session_state.rec_type
+#                 spr.log_output = log_output
+#                 st.session_state.rec_uris = spr.get_songs_recommendations(n=10)
+#                 # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
+#                 # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
+#                 st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
+#                 st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
+#                 st.session_state.got_rec = True
+#             st.success('Here are top 10 recommendations!')
+#     else:
+#         log_output('Showing already found recommendations')
 
-    insert_songs(rec_songsholder, st.session_state.rec_uris)
+#     insert_songs(rec_songsholder, st.session_state.rec_uris)
 
-    if st.session_state.got_feedback == False:
-        with user_fbholder:
-            c1, c2, c3, c4 = st.columns((1, 1, 1, 1))
-            with c1:
-                st.button("Love it", key='love', on_click=add_feedback, args=('Love it',))
-            with c2:
-                st.button("Like it", key='like', on_click=add_feedback, args=('Like it',))
-            with c3:
-                st.button("Okay", key='okay', on_click=add_feedback, args=('Okay',))
-            with c4:
-                st.button("Hate it", key='hate', on_click=add_feedback, args=('Hate it',))
+#     if st.session_state.got_feedback == False:
+#         with user_fbholder:
+#             c1, c2, c3, c4 = st.columns((1, 1, 1, 1))
+#             with c1:
+#                 st.button("Love it", key='love', on_click=add_feedback, args=('Love it',))
+#             with c2:
+#                 st.button("Like it", key='like', on_click=add_feedback, args=('Like it',))
+#             with c3:
+#                 st.button("Okay", key='okay', on_click=add_feedback, args=('Okay',))
+#             with c4:
+#                 st.button("Hate it", key='hate', on_click=add_feedback, args=('Hate it',))
 
-    with fb_plotholder:
-        try:
-            feedback_db = User_FeedbackDB()
-            fig = feedback_db.get_feedback_plot()
-            del feedback_db
-            if fig:
-                st.subheader('User Feedback:')
-                st.plotly_chart(fig, use_container_width=True)
-        except:
-            pass
+#     with fb_plotholder:
+#         try:
+#             feedback_db = User_FeedbackDB()
+#             fig = feedback_db.get_feedback_plot()
+#             del feedback_db
+#             if fig:
+#                 st.subheader('User Feedback:')
+#                 st.plotly_chart(fig, use_container_width=True)
+#         except:
+#             pass
 
-    # genre_wordcloud_holder.pyplot(st.session_state.genre_wordcloud_fig)
-    # playlist_wordcloud_holder.pyplot(st.session_state.playlist_wordcloud_fig)
-    user_cluster_all_holder.pyplot(st.session_state.user_cluster_all_fig)
-    user_cluster_single_holder.pyplot(st.session_state.user_cluster_single_fig)
+#     # genre_wordcloud_holder.pyplot(st.session_state.genre_wordcloud_fig)
+#     # playlist_wordcloud_holder.pyplot(st.session_state.playlist_wordcloud_fig)
+#     user_cluster_all_holder.pyplot(st.session_state.user_cluster_all_fig)
+#     user_cluster_single_holder.pyplot(st.session_state.user_cluster_single_fig)
 
     
         
 
 
 
-def main():
-    #spr_sidebar()
-    # if st.session_state.app_mode == 'dataset':
-    #     dataset_page()
+# def main():
+#     #spr_sidebar()
+#     # if st.session_state.app_mode == 'dataset':
+#     #     dataset_page()
 
-    if st.session_state.app_mode == 'model':
-        model_page()
+#     if st.session_state.app_mode == 'model':
+#         model_page()
 
-    if st.session_state.app_mode == 'recommend':
-        rec_page()
+#     if st.session_state.app_mode == 'recommend':
+#         rec_page()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
