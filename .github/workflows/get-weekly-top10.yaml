@@ -2,7 +2,7 @@ name: py
     
 on:
   schedule:
-    - cron: "*/10 * * * *" #runs at 00:00 UTC every Monday -> every 10th minute
+    - cron: "*/15 * * * *" #runs at 00:00 UTC every Monday -> every 15th minute
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
           python-version: 3.8 #install the python needed
       - name: execute py script # run the run.py to get the latest data
         run: |
-          pip install spotipy==2.19.0 python-decouple
+          pip install -r requirements.txt
           python avg_album_length_playlist.py
         env:
           SPOTIPY_CLIENT_ID:   ${{ secrets.SPOTIPY_CLIENT_ID }}
