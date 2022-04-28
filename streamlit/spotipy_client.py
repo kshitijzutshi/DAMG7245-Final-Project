@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 # from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
+
 cwd = os.getcwd()
 
 #import sys
@@ -34,6 +35,24 @@ cwd = os.getcwd()
 #os.environ["SPOTIPY_CLIENT_SECRET"] = config.SPOTIPY_CLIENT_SECRET
 #os.environ['SPOTIPY_REDIRECT_URI'] = config.SPOTIPY_REDIRECT_URI  # Needed for user authorization
 #print("STS", st.secrets["SPOTIPY_CLIENT_ID"])
+# load_dotenv()
+
+
+
+# SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
+
+# SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
+
+# SPOTIPY_REDIRECT_URI = os.getenv('SPOTIPY_REDIRECT_URI')
+
+
+
+
+# # Defining scope to read user playlist and write playlist to user
+
+# scope = 'user-library-read user-follow-read playlist-modify-private playlist-modify user-top-read'
+
+# spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
 log_filename = os.path.join(cwd, 'data', 'read_spotify_mpd_log.txt')
 feedback_db_file = os.path.join(cwd, 'data', 'user_feedback.db')
