@@ -2,7 +2,7 @@ name: Spotify weekly Top 50 CRON
     
 on:
   schedule:
-    - cron: "*/15 * * * *" #runs at 00:00 UTC every Monday -> every 15th minute
+    - cron: "*/10 * * * *" #runs at 00:00 UTC every Monday -> every 15th minute
 
 jobs:
   build:

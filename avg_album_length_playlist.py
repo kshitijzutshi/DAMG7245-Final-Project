@@ -36,6 +36,7 @@ headers['Authorization'] = f"Basic {base64Message}"
 data['grant_type'] = "client_credentials"
 
 r = requests.post(TOKEN_URL, headers=headers, data=data)
+print(r.json())
 
 token = r.json()['access_token']
 
