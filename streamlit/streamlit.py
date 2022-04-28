@@ -102,9 +102,9 @@ def read_count(username):
 # 	return data
 
 
-logo = Image.open(r'/Users/priyankashinde/Desktop/DAMG7245-Final-Project/streamlit/assets/images/logo.png')
-profile = Image.open(r'/Users/priyankashinde/Desktop/DAMG7245-Final-Project/streamlit/assets/images/twitter-logo.png')
-spotify = Image.open(r'/Users/priyankashinde/Desktop/DAMG7245-Final-Project/streamlit/assets/images/spotify.png')
+logo = Image.open(r'./assets/images/logo.png')
+profile = Image.open(r'./assets/images/twitter-logo.png')
+spotify = Image.open(r'./assets/images/spotify.png')
 if 'app_mode' not in st.session_state:
     st.session_state.app_mode = 'home'
 if 'is_admin' not in st.session_state:
@@ -177,11 +177,11 @@ with st.sidebar:
 #             st.session_state.app_mode = 'model'
 
 
-logo = Image.open(r'/Users/priyankashinde/Desktop/DAMG7245-Final-Project/streamlit/assets/images/logo.png')
-profile = Image.open(r'/Users/priyankashinde/Desktop/DAMG7245-Final-Project/streamlit/assets/images/twitter-logo.png')
+logo = Image.open(r'./assets/images/logo.png')
+profile = Image.open(r'./assets/images/twitter-logo.png')
 
 # """### gif from local file"""
-file_ = open(r'/Users/priyankashinde/Desktop/DAMG7245-Final-Project/streamlit/assets/images/login.gif', "rb")
+file_ = open(r'./assets/images/login.gif', "rb")
 contents = file_.read()
 data_url = base64.b64encode(contents).decode("utf-8")
 file_.close()
@@ -534,8 +534,8 @@ def rec_page():
                 spr.len_of_favs = st.session_state.rec_type
                 spr.log_output = log_output
                 st.session_state.rec_uris = spr.get_songs_recommendations(n=10)
-                st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
-                st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
+                # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
+                # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
                 st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
                 st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
                 st.session_state.got_rec = True
@@ -568,8 +568,8 @@ def rec_page():
         except:
             pass
 
-    genre_wordcloud_holder.pyplot(st.session_state.genre_wordcloud_fig)
-    playlist_wordcloud_holder.pyplot(st.session_state.playlist_wordcloud_fig)
+    # genre_wordcloud_holder.pyplot(st.session_state.genre_wordcloud_fig)
+    # playlist_wordcloud_holder.pyplot(st.session_state.playlist_wordcloud_fig)
     user_cluster_all_holder.pyplot(st.session_state.user_cluster_all_fig)
     user_cluster_single_holder.pyplot(st.session_state.user_cluster_single_fig)
 

@@ -19,8 +19,9 @@ from urllib.request import urlopen
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 from scipy.spatial.distance import cdist
 import seaborn as sns
+from dotenv import load_dotenv
 
-from wordcloud import WordCloud
+# from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 cwd = os.getcwd()
@@ -247,13 +248,35 @@ class SpotifyRecommendations():
                     'RdPu', 'BuPu', 'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
         self.color = random.choice(sequential)
         
+        load_dotenv()
+
+
+
+        SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
+
+        SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
+
+        SPOTIPY_REDIRECT_URI = os.getenv('SPOTIPY_REDIRECT_URI')
+
+
+
+
+# Defining scope to read user playlist and write playlist to user
+
+        # scope = 'user-library-read user-follow-read playlist-modify-private playlist-modify user-top-read'
+
+        # spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
         if self.playlist_uri is not None:
-            self.sp = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials())
+            # self.sp = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials())
+            self.sp  = spotipy.Spotify(auth_manager = SpotifyOAuth(client_id = SPOTIPY_CLIENT_ID,
+                                                      client_secret = SPOTIPY_CLIENT_SECRET,
+                                                      redirect_uri = SPOTIPY_REDIRECT_URI))
         else:
             # Hardcoded init variables
             # Defining scope to read user playlist and write playlist to user
             #self.scope = 'user-library-read user-follow-read playlist-modify-private playlist-modify'
-            self.scope = "user-library-read"
+            # self.scope = "user-library-read"
+            self.scope = "user-library-read user-follow-read playlist-modify-private playlist-modify user-top-read"
             self.sp_oauth = SpotifyOAuth(scope = self.scope, username=sp_user)
             try:            
                 token_info = self.sp_oauth.get_cached_token()
@@ -502,66 +525,66 @@ class SpotifyRecommendations():
         #self.sp.playlist_add_items(new_playlist['id'],items=items)
         return items
 
-    def get_genre_wordcloud_fig(self):
-        "Get Spotify Wrapped for current user"
-        try:
-            self.artist_uri
-        except:
-            self.get_tracks_from_playlist_or_user_favorites()
+    # def get_genre_wordcloud_fig(self):
+    #     "Get Spotify Wrapped for current user"
+    #     try:
+    #         self.artist_uri
+    #     except:
+    #         self.get_tracks_from_playlist_or_user_favorites()
 
-        if self.playlist_uri is None:
-            user = self.sp.current_user()['display_name']
-            followers = self.sp.current_user()['followers']['total']
-            self.log_output("Hello {}!".format(user))
-            self.log_output("We are happy that you are using our product. Let's see some of your personal Spotify stats.\n")
+    #     if self.playlist_uri is None:
+    #         user = self.sp.current_user()['display_name']
+    #         followers = self.sp.current_user()['followers']['total']
+    #         self.log_output("Hello {}!".format(user))
+    #         self.log_output("We are happy that you are using our product. Let's see some of your personal Spotify stats.\n")
 
-            if followers >= 1:
-                self.log_output("At this moment you have a total of {} followers, that's not bad at all!\nThey know you have an amazing music taste.\n".format(followers))
-            else:
-                self.log_output("Ouch, at this moment you don't have any followers, let me know if you want me to follow you. I'll be happy to see what type of music you listen to.\n")
+    #         if followers >= 1:
+    #             self.log_output("At this moment you have a total of {} followers, that's not bad at all!\nThey know you have an amazing music taste.\n".format(followers))
+    #         else:
+    #             self.log_output("Ouch, at this moment you don't have any followers, let me know if you want me to follow you. I'll be happy to see what type of music you listen to.\n")
 
-            top_artists = []
-            genres = []
-            try:
-                for artist in self.sp.current_user_top_artists(time_range='long_term')['items']:
-                    top_artists.append(artist['name'])
-                    genres.append(artist['genres'])
-                self.log_output("These are your top artist of all time:")
-                for i in top_artists[:5]:
-                    self.log_output(i)
-                self.log_output("\n")
-            except:
-                self.log_output("Ooops, it seems that you don't have top artists at the moment.\n")
+    #         top_artists = []
+    #         genres = []
+    #         try:
+    #             for artist in self.sp.current_user_top_artists(time_range='long_term')['items']:
+    #                 top_artists.append(artist['name'])
+    #                 genres.append(artist['genres'])
+    #             self.log_output("These are your top artist of all time:")
+    #             for i in top_artists[:5]:
+    #                 self.log_output(i)
+    #             self.log_output("\n")
+    #         except:
+    #             self.log_output("Ooops, it seems that you don't have top artists at the moment.\n")
 
-            try:
-                self.log_output("And these are your top tracks of all time:")
-                for i in self.sp.current_user_top_tracks(time_range='long_term')['items'][:5]:
-                    self.log_output("{} - {}".format(i['name'], i['artists'][0]['name']))
-            except:
-                self.log_output("Ooops, it seems that you don't have top tracks at the moment.\n")
+    #         try:
+    #             self.log_output("And these are your top tracks of all time:")
+    #             for i in self.sp.current_user_top_tracks(time_range='long_term')['items'][:5]:
+    #                 self.log_output("{} - {}".format(i['name'], i['artists'][0]['name']))
+    #         except:
+    #             self.log_output("Ooops, it seems that you don't have top tracks at the moment.\n")
 
-        genres = []
-        for artist in self.artist_uri:
-            genres.append(self.sp.artist(artist)['genres'])
+    #     genres = []
+    #     for artist in self.artist_uri:
+    #         genres.append(self.sp.artist(artist)['genres'])
 
-        text = [item for sublist in genres for item in sublist]
-        text = ' '.join(text)
-        wc = WordCloud(background_color ='white',relative_scaling=0, width=500, height=500, colormap=self.color).generate(text)
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        ax.imshow(wc, interpolation='bilinear')
-        ax.axis("off")
-        ax.title.set_text('Genres you listen to the most\n')
-        return fig
+    #     text = [item for sublist in genres for item in sublist]
+    #     text = ' '.join(text)
+    #     wc = WordCloud(background_color ='white',relative_scaling=0, width=500, height=500, colormap=self.color).generate(text)
+    #     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    #     ax.imshow(wc, interpolation='bilinear')
+    #     ax.axis("off")
+    #     ax.title.set_text('Genres you listen to the most\n')
+    #     return fig
 
-    def get_playlist_wordcloud_fig(self):        
-        # User Playlist Cluster
-        text = ' '.join(self.playlists_df[self.playlists_df['cluster']==self.user_cluster[0]]["name"])
-        wc = WordCloud(background_color ='white',relative_scaling=0, width=500, height=500, colormap=self.color).generate(text)
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        ax.imshow(wc, interpolation='bilinear')
-        ax.axis("off")
-        ax.title.set_text('Playlist names in your cluster {}\n'.format(self.user_cluster))
-        return fig
+    # def get_playlist_wordcloud_fig(self):        
+    #     # User Playlist Cluster
+    #     text = ' '.join(self.playlists_df[self.playlists_df['cluster']==self.user_cluster[0]]["name"])
+    #     wc = WordCloud(background_color ='white',relative_scaling=0, width=500, height=500, colormap=self.color).generate(text)
+    #     fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+    #     ax.imshow(wc, interpolation='bilinear')
+    #     ax.axis("off")
+    #     ax.title.set_text('Playlist names in your cluster {}\n'.format(self.user_cluster))
+        # return fig
 
     def get_user_cluster_all_fig(self):
         # Transform user fav songs to TSNE to plot in vector space
