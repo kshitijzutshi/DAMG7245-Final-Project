@@ -115,6 +115,8 @@ if 'got_rec' not in st.session_state:
     st.session_state.got_rec = False
 if 'rec_type' not in st.session_state:
     st.session_state.rec_type = 'playlist'
+if 'song_rec_type' not in st.session_state:
+    st.session_state.rec_type = 'song'
 if 'rec_uris' not in st.session_state:
     st.session_state.rec_uris = []
 if 'rec_track_id' not in st.session_state:
@@ -176,8 +178,20 @@ def playlist_page():
     uri_link = 'https://open.spotify.com/embed/playlist/' + playlist_uri
     components.iframe(uri_link, height=300)
     return
+def song_name_page(song_uri):
+    st.subheader("User's Song")
+    st.markdown('---')
+    # playlist_uri = st.session_state.playlist_url.split('/')[-1].split('?')[0]
+    uri_link = 'https://embed.spotify.com/oembed/?url=spotify:track:' + song_uri
+    components.iframe(uri_link, height=300)
+    return
 
 def get_recommendations(rec_type):
+    st.session_state.got_rec = False
+    st.session_state.got_feedback = False
+    st.session_state.app_mode = 'recommend'
+    st.session_state.rec_type = rec_type
+def get_song_name_recommendations(rec_type):
     st.session_state.got_rec = False
     st.session_state.got_feedback = False
     st.session_state.app_mode = 'recommend'
@@ -267,17 +281,18 @@ def model_page():
         st.session_state.song_name = st.session_state.example_song_name
         st.text_input("Song name", key='song_name', on_change=update_song_name)
         
-        
-        playlist_uri = st.session_state.playlist_url.split('/')[-1]
-        st.session_state.spr = SpotifyRecommendations(playlist_uri=playlist_uri)
+        song_name = st.session_state.song_name
+        # playlist_uri = st.session_state.playlist_url.split('/')[-1]
+        st.session_state.spr = SpotifyRecommendations(song_name=song_name)
+        track_uri = st.session_state.spr.get_track_uri_from_track_name(song_name)
         st.session_state.spr.log_output = log_output
-        playlist_page()
+        song_name_page(track_uri)
         st.markdown("<br>", unsafe_allow_html=True)
-        get_rec = st.button("Get Recommendations", key='pl', on_click=get_recommendations, args=('playlist',))
+        get_rec = st.button("Get Recommendations", key='song', on_click=get_song_name_recommendations, args=('song',))
         
         if get_rec:
-            if st.session_state.rec_type == 'playlist':
-                st.subheader('Recommendations based on Playlist:')
+            if st.session_state.rec_type == 'song':
+                st.subheader('Recommendations based on Song:')
 
             status_holder = st.empty()
             rec_songsholder = st.empty()

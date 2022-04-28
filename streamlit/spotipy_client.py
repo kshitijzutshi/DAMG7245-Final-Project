@@ -253,7 +253,7 @@ class SpotifyRecommendations():
             - indices (np.array): indices of the top n playlists based on the train_data_scaled_feats_df dataframe
 
     """
-    def __init__(self, playlist_uri=None, sp_user=None):
+    def __init__(self, playlist_uri=None, song_name=None, sp_user=None):
         """
         Inits class with hard coded values for the Spotify instance and gets the paths for all the models and data
         """
@@ -261,6 +261,7 @@ class SpotifyRecommendations():
                                'liveness', 'valence', 'tempo', 'duration_ms', 'time_signature']
 
         self.playlist_uri = playlist_uri
+        self.song_name = song_name
         self.len_of_favs = 'all_time'
         self.log_output = None
         sequential =['Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds','YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 
@@ -415,6 +416,15 @@ class SpotifyRecommendations():
     # GET TRACK ID FROM TRACK NAME IN TRACK DATA BASE
     # Get the audio features for the track 
     # drop the track id from  this new filtered dataframe
+    def get_track_uri_from_track_name(self, track_name):
+        self.log_output('Getting track uri from track name: ' + track_name)
+        track_df = self.tracks_df[self.tracks_df['track_name'].str.lower() == track_name.lower()]
+        if len(track_df) > 0:
+            self.log_output('Found track: ' + track_name)
+            return track_df['track_uri'].values[0]
+        else:
+            self.log_output('Could not find track: ' + track_name)
+            return None
     def get_audio_features_from_track_name(self, track_name, metric='cityblock', similar=True):
         
         track_id = self.tracks_df[self.tracks_df['track_name'] == track_name]['track_id'].values[0]
