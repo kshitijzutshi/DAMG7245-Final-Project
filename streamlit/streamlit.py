@@ -284,9 +284,16 @@ def model_page():
         song_name = st.session_state.song_name
         # playlist_uri = st.session_state.playlist_url.split('/')[-1]
         st.session_state.spr = SpotifyRecommendations(song_name=song_name)
-        track_uri = st.session_state.spr.get_track_uri_from_track_name(song_name)
+        load_spr_ml_model()
+        spr = st.session_state.spr
+        spr.set_ml_model(st.session_state.ml_model)
+        track_uri = st.session_state.spr.get_track_uri_from_track_name()
         st.session_state.spr.log_output = log_output
-        song_name_page(track_uri)
+        st.subheader("User's Song")
+        st.markdown('---')
+        uri_link = 'https://open.spotify.com/embed/track/' + track_uri
+        components.iframe(uri_link, height=300)
+        #song_name_page(track_uri)
         st.markdown("<br>", unsafe_allow_html=True)
         get_rec = st.button("Get Recommendations", key='song', on_click=get_song_name_recommendations, args=('song',))
         
@@ -324,11 +331,11 @@ def model_page():
                         spr.len_of_favs = st.session_state.rec_type
                         spr.log_output = log_output
                         
-                        st.session_state.rec_uris = spr.get_songs_recommendations(spr.get_audio_features_from_track_name(st.session_state.song_name),n=10)
+                        st.session_state.rec_uris = spr.get_song_recommendation_from_song_name(n=10)
                         # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
                         # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
-                        st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
-                        st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
+                        # st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
+                        # st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
                         st.session_state.got_rec = True
                     st.success('Here are top 10 recommendations!')
             else:

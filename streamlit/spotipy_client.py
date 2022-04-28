@@ -416,26 +416,29 @@ class SpotifyRecommendations():
     # GET TRACK ID FROM TRACK NAME IN TRACK DATA BASE
     # Get the audio features for the track 
     # drop the track id from  this new filtered dataframe
-    def get_track_uri_from_track_name(self, track_name):
-        self.log_output('Getting track uri from track name: ' + track_name)
-        track_df = self.tracks_df[self.tracks_df['track_name'].str.lower() == track_name.lower()]
-        if len(track_df) > 0:
-            self.log_output('Found track: ' + track_name)
-            return track_df['track_uri'].values[0]
-        else:
-            self.log_output('Could not find track: ' + track_name)
-            return None
-    def get_audio_features_from_track_name(self, track_name, metric='cityblock', similar=True):
+    def get_track_uri_from_track_name(self):
+        #self.log_output('Getting track uri from track name: ' + track_name)
+        #df = self.tracks_df[self.tracks_df['track_name'].str.lower() == self.song_name.lower()]['track_uri'].values[0]
+        return self.tracks_df[self.tracks_df['track_name'].str.lower() == self.song_name.lower()]['track_uri'].values[0]
         
-        track_id = self.tracks_df[self.tracks_df['track_name'] == track_name]['track_id'].values[0]
+    def get_audio_features_from_track_name(self, track_name):
+        
+        track_id = self.tracks_df[self.tracks_df['track_name'].str.lower() == track_name.lower()]['track_id'].values[0]
         # get audio features from track id
         audio_feats_df = self.features_df[self.features_df['track_id'] == track_id].copy()
         audio_feats_df.drop(columns='track_id', inplace=True)
+        self.new = np.array(audio_feats_df).reshape(1, -1)
+        return self.new
 
         # Get labels from model and predict user cluster
-        self.user_cluster = self.model.predict(np.array(audio_feats_df).reshape(1, -1))
-        
-        # Slice df for the predicted cluster and get Playlist IDs (PIDs)
+    def get_top_n_playlist_track(self, metric='cityblock', similar=True):
+        try:
+            self.new
+        except:
+            self.get_audio_features_from_track_name(self.song_name)
+        self.user_cluster = self.model.predict(self.new)
+            
+            # Slice df for the predicted cluster and get Playlist IDs (PIDs)
         df_slice = self.train_data_scaled_feats_df[self.train_data_scaled_feats_df['cluster']==self.user_cluster[0]]
         df_slice = df_slice.drop(['cluster'], axis=1)
         indices = self.train_data_scaled_feats_df[self.train_data_scaled_feats_df['cluster']==self.user_cluster[0]].reset_index()['index'].to_numpy() # PIDs for the cluster
@@ -443,9 +446,9 @@ class SpotifyRecommendations():
         # Convert df slice to numpy, compute similarities and grab the top n PIDs
         sliced_data_array = df_slice.to_numpy()
         if similar:
-            simi = cdist(sliced_data_array, np.array(audio_feats_df).reshape(1, -1), metric=metric).argsort(axis=None)[:10]
+            simi = cdist(sliced_data_array, self.new, metric=metric).argsort(axis=None)[:10]
         else:
-            simi = cdist(sliced_data_array, np.array(audio_feats_df).reshape(1, -1), metric=metric).argsort(axis=None)[-10:]
+            simi = cdist(sliced_data_array, self.new, metric=metric).argsort(axis=None)[-10:]
         self.song_top_playlists = indices[simi]
 
         return self.song_top_playlists
@@ -565,7 +568,7 @@ class SpotifyRecommendations():
         return self.song_uris
     
     # Get audio features form a song name
-    def get_song_recommendation_from_song_name(self,song_top_playlists ,n=30, printing=False):
+    def get_song_recommendation_from_song_name(self, n=30, printing=False):
         """
         This function computes the variance, of each song in the given playlists, to the user's favorite songs (raw_y)
         Parameters:
@@ -574,14 +577,14 @@ class SpotifyRecommendations():
             - printing (bool): Flag to print or not the song recommendations, default to False.
         """
         try:
-            self.song_top_playlists = song_top_playlists
+            self.song_top_playlists 
         except:
-            self.song_top_playlists = song_top_playlists
+            self.get_top_n_playlist_track()
 
         playlist_audio_features_df = self.get_audio_features_df(playlist_pids_list=self.song_top_playlists)
         array_audio_feats = playlist_audio_features_df[self.feat_cols_user].to_numpy()
         
-        y_vector = np.array(self.raw_y).reshape(1,-1)
+        y_vector = self.new
         low_variance_indices = np.sum(np.square((y_vector-array_audio_feats)),axis=1).argsort(axis=None)
         self.song_uris = playlist_audio_features_df.loc[low_variance_indices]['uri']
         self.song_uris.drop_duplicates(inplace=True)
