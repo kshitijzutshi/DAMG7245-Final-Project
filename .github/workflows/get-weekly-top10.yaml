@@ -1,4 +1,4 @@
-name: py
+name: Spotify weekly Top 50 CRON
     
 on:
   schedule:
