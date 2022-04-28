@@ -411,6 +411,36 @@ class SpotifyRecommendations():
         self.artist_uri = songs_df['artist_uri'].tolist()
         self.log_output('Found unique tracks: ' + str(len(songs_df)))
         return songs_df
+    
+    # GET TRACK ID FROM TRACK NAME IN TRACK DATA BASE
+    # Get the audio features for the track 
+    # drop the track id from  this new filtered dataframe
+    def get_audio_features_from_track_name(self, track_name, metric='cityblock', similar=True):
+        
+        track_id = self.tracks_df[self.tracks_df['track_name'] == track_name]['track_id'].values[0]
+        # get audio features from track id
+        audio_feats_df = self.features_df[self.features_df['track_id'] == track_id].copy()
+        audio_feats_df.drop(columns='track_id', inplace=True)
+
+        # Get labels from model and predict user cluster
+        self.user_cluster = self.model.predict(np.array(audio_feats_df).reshape(1, -1))
+        
+        # Slice df for the predicted cluster and get Playlist IDs (PIDs)
+        df_slice = self.train_data_scaled_feats_df[self.train_data_scaled_feats_df['cluster']==self.user_cluster[0]]
+        df_slice = df_slice.drop(['cluster'], axis=1)
+        indices = self.train_data_scaled_feats_df[self.train_data_scaled_feats_df['cluster']==self.user_cluster[0]].reset_index()['index'].to_numpy() # PIDs for the cluster
+        
+        # Convert df slice to numpy, compute similarities and grab the top n PIDs
+        sliced_data_array = df_slice.to_numpy()
+        if similar:
+            simi = cdist(sliced_data_array, np.array(audio_feats_df).reshape(1, -1), metric=metric).argsort(axis=None)[:10]
+        else:
+            simi = cdist(sliced_data_array, np.array(audio_feats_df).reshape(1, -1), metric=metric).argsort(axis=None)[-10:]
+        self.song_top_playlists = indices[simi]
+
+        return self.song_top_playlists
+
+                       
 
     def get_tracks_audio_features(self): 
         "Extract audio features from each track from the user's favorite tracks and return a dataframe"
@@ -496,7 +526,7 @@ class SpotifyRecommendations():
         
         return self.top_playlists
 
-    def get_songs_recommendations(self, n=30, printing=False):
+    def get_songs_recommendations(self,n=30, printing=False):
         """
         This function computes the variance, of each song in the given playlists, to the user's favorite songs (raw_y)
         Parameters:
@@ -509,6 +539,36 @@ class SpotifyRecommendations():
             self.get_top_n_playlists(printing=True)
 
         playlist_audio_features_df = self.get_audio_features_df(playlist_pids_list=self.top_playlists)
+        array_audio_feats = playlist_audio_features_df[self.feat_cols_user].to_numpy()
+        
+        y_vector = np.array(self.raw_y).reshape(1,-1)
+        low_variance_indices = np.sum(np.square((y_vector-array_audio_feats)),axis=1).argsort(axis=None)
+        self.song_uris = playlist_audio_features_df.loc[low_variance_indices]['uri']
+        self.song_uris.drop_duplicates(inplace=True)
+        self.song_uris = self.song_uris[:n]
+
+        if printing:
+            for uri in self.song_uris:
+                print('Song: {}'.format(self.sp.track(uri)['name']))
+                print('Artist: {}\n'.format(self.sp.track(uri)['artists'][0]['name']))
+
+        return self.song_uris
+    
+    # Get audio features form a song name
+    def get_song_recommendation_from_song_name(self,song_top_playlists ,n=30, printing=False):
+        """
+        This function computes the variance, of each song in the given playlists, to the user's favorite songs (raw_y)
+        Parameters:
+            - song_name (str): name of the song to recommend
+            - n (int): number of songs to recommend, default to 30.
+            - printing (bool): Flag to print or not the song recommendations, default to False.
+        """
+        try:
+            self.song_top_playlists = song_top_playlists
+        except:
+            self.song_top_playlists = song_top_playlists
+
+        playlist_audio_features_df = self.get_audio_features_df(playlist_pids_list=self.song_top_playlists)
         array_audio_feats = playlist_audio_features_df[self.feat_cols_user].to_numpy()
         
         y_vector = np.array(self.raw_y).reshape(1,-1)
@@ -543,6 +603,7 @@ class SpotifyRecommendations():
         #new_playlist = self.sp.user_playlist_create(user_id, playlist_name, description=description)
         #self.sp.playlist_add_items(new_playlist['id'],items=items)
         return items
+
 
     # def get_genre_wordcloud_fig(self):
     #     "Get Spotify Wrapped for current user"

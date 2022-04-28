@@ -117,6 +117,8 @@ if 'rec_type' not in st.session_state:
     st.session_state.rec_type = 'playlist'
 if 'rec_uris' not in st.session_state:
     st.session_state.rec_uris = []
+if 'rec_track_id' not in st.session_state:
+    st.session_state.rec_track_id = 0
 
 if 'user_op' not in st.session_state:
     st.session_state.user_op = 'Playlist'
@@ -135,6 +137,11 @@ if 'example_url' not in st.session_state:
     st.session_state.example_url = 'Example: https://open.spotify.com/embed/playlist/37i9dQZF1DX0kbJZpiYdZl'
 def update_playlist_url():
     st.session_state.example_url = st.session_state.playlist_url
+
+if 'example_song_name' not in st.session_state:
+    st.session_state.example_song_name = 'Example: Save your Tears'
+def update_song_name():
+    st.session_state.example_song_name = st.session_state.song_name
 
 def add_feedback_df(feedback_df):
     feedback_db = User_FeedbackDB()
@@ -254,7 +261,65 @@ def model_page():
                 log_output('Showing already found recommendations')
 
             insert_songs(rec_songsholder, st.session_state.rec_uris)
+    else:
+        # first create a state for the text box update value
 
+        st.session_state.song_name = st.session_state.example_song_name
+        st.text_input("Song name", key='song_name', on_change=update_song_name)
+        
+        
+        playlist_uri = st.session_state.playlist_url.split('/')[-1]
+        st.session_state.spr = SpotifyRecommendations(playlist_uri=playlist_uri)
+        st.session_state.spr.log_output = log_output
+        playlist_page()
+        st.markdown("<br>", unsafe_allow_html=True)
+        get_rec = st.button("Get Recommendations", key='pl', on_click=get_recommendations, args=('playlist',))
+        
+        if get_rec:
+            if st.session_state.rec_type == 'playlist':
+                st.subheader('Recommendations based on Playlist:')
+
+            status_holder = st.empty()
+            rec_songsholder = st.empty()
+            user_fbholder = st.empty()
+
+            left_column, middle_column, right_column = st.columns(3)
+            with left_column:
+                fb_plotholder = st.empty()
+            with middle_column:
+                playlist_wordcloud_holder = st.empty()
+                user_cluster_all_holder = st.empty()
+                
+            with right_column:
+                genre_wordcloud_holder = st.empty()
+                user_cluster_single_holder = st.empty()
+            if st.session_state.ml_model is None:
+                with status_holder:
+                    with st.spinner('Loading ML Model...'):
+                        load_spr_ml_model()
+                    st.success('ML Model Loaded!')
+            else:
+                log_output('ML model is already loaded')
+            
+            if st.session_state.got_rec == False:
+                spr = st.session_state.spr
+                spr.set_ml_model(st.session_state.ml_model)
+                with status_holder:
+                    with st.spinner('Getting Recommendations...'):
+                        spr.len_of_favs = st.session_state.rec_type
+                        spr.log_output = log_output
+                        
+                        st.session_state.rec_uris = spr.get_songs_recommendations(spr.get_audio_features_from_track_name(st.session_state.song_name),n=10)
+                        # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
+                        # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
+                        st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
+                        st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
+                        st.session_state.got_rec = True
+                    st.success('Here are top 10 recommendations!')
+            else:
+                log_output('Showing already found recommendations')
+
+            insert_songs(rec_songsholder, st.session_state.rec_uris)
 
 
         with st.expander("Here's how to find any Playlist URL in Spotify"):
