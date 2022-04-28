@@ -1,5 +1,6 @@
 def spotify_playlists():
-    playlists = {'weekly_top50': 'spotify:playlist:37i9dQZEVXbMDoHDwVN2tF'}
+    # playlists = {'weekly_top50': 'spotify:playlist:37i9dQZEVXbMDoHDwVN2tF'}
+    playlists = {'weekly_top50': '37i9dQZEVXbMDoHDwVN2tF'}
     return playlists
 
 
