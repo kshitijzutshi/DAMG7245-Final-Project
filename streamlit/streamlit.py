@@ -4,7 +4,6 @@ import streamlit.components.v1 as html
 from  PIL import Image
 import base64
 import numpy as np
-# import cv2
 #from  PIL import ImageChops
 import pandas as pd
 from st_aggrid import AgGrid
@@ -15,6 +14,12 @@ import hashlib
 import streamlit.components.v1 as components
 
 from spotipy_client import *
+
+
+
+# Get the current working directory
+cwd = os.getcwd()
+
 
 def make_hashes(password):
 	return hashlib.sha256(str.encode(password)).hexdigest()
@@ -100,10 +105,10 @@ def read_count(username):
 # 	data = c.fetchall()
 # 	return data
 
-
-logo = Image.open(r'./assets/images/logo.png')
-profile = Image.open(r'./assets/images/twitter-logo.png')
-spotify = Image.open(r'./assets/images/spotify.png')
+# st.image(os.path.join(cwd, 'images', 'spotify_get_playlist_uri.png'))
+# logo = Image.open(r'./assets/images/logo.png')
+# profile = Image.open(r'./assets/images/twitter-logo.png')
+# spotify = Image.open(r'./assets/images/spotify.png')
 if 'app_mode' not in st.session_state:
     st.session_state.app_mode = 'home'
 if 'is_admin' not in st.session_state:
@@ -351,7 +356,8 @@ def model_page():
                 - Choose "Copy link to playlist"
             """)
             st.markdown("<br>", unsafe_allow_html=True)
-            st.image('./assets/images/spotify_get_playlist_uri.png')
+            st.image(os.path.join(cwd, 'images', 'spotify_get_playlist_uri.png'))
+            # st.image('./assets/images/spotify_get_playlist_uri.png')
 
 
 def rec_page():
@@ -440,7 +446,8 @@ def rec_page():
 #def spr_sidebar():
 with st.sidebar:
     #model_button = st.button('Recommendation')
-    st.image(spotify, width=300)
+    st.image(os.path.join(cwd, 'images', 'spotify.png'))
+    # st.image(spotify, width=300)
     choose = option_menu("Spotify Music Recommendation App", ["Home", "Dataset", "Model", "Recommendations", "Conclusions"],
                         icons=['house', 'file-earmark-music-fill', 'pc', 'boombox','journal'],
                         menu_icon="app-indicator", default_index=0,
@@ -458,14 +465,14 @@ with st.sidebar:
 #             st.session_state.app_mode = 'model'
 
 
-logo = Image.open(r'./assets/images/logo.png')
-profile = Image.open(r'./assets/images/twitter-logo.png')
+# logo = Image.open(r'./assets/images/logo.png')
+# profile = Image.open(r'./assets/images/twitter-logo.png')
 
 # """### gif from local file"""
-file_ = open(r'./assets/images/login.gif', "rb")
-contents = file_.read()
-data_url = base64.b64encode(contents).decode("utf-8")
-file_.close()
+# file_ = open(r'./assets/images/login.gif', "rb")
+# contents = file_.read()
+# data_url = base64.b64encode(contents).decode("utf-8")
+# file_.close()
 
 
 st.title('Spotify Music Recommendation App')
@@ -560,94 +567,10 @@ if choose == "Home":
         
 
 elif choose == "Dataset":
-    col1, col2 = st.columns( [0.8, 0.2])
-    with col1:               # To display the header text using css style
-        st.markdown(""" <style> .font {
-        font-size:35px ; font-family: 'Cooper Black'; color: #FF9633;} 
-        </style> """, unsafe_allow_html=True)
-        st.markdown('<p class="font">Upload your photo here...</p>', unsafe_allow_html=True)
-        
-    with col2:               # To display brand logo
-        st.image(logo,  width=150)
-    #Add file uploader to allow users to upload photos
-    uploaded_file = st.file_uploader("", type=['jpg','png','jpeg'])
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        
-        col1, col2 = st.columns( [0.5, 0.5])
-        with col1:
-            st.markdown('<p style="text-align: center;">Before</p>',unsafe_allow_html=True)
-            st.image(image,width=300)  
-
-        with col2:
-            st.markdown('<p style="text-align: center;">After</p>',unsafe_allow_html=True)
-
-            converted_img = np.array(image.convert('RGB')) 
-            gray_scale = cv2.cvtColor(converted_img, cv2.COLOR_RGB2GRAY)
-            inv_gray = 255 - gray_scale
-            blur_image = cv2.GaussianBlur(inv_gray, (125,125), 0, 0)
-            sketch = cv2.divide(gray_scale, 255 - blur_image, scale=256)
-            st.image(sketch, width=300)
+    st.header("Add details about dataset here")
 
 elif choose == "Model":
-#Add a file uploader to allow users to upload their project plan file
-    st.markdown(""" <style> .font {
-    font-size:35px ; font-family: 'Cooper Black'; color: #FF9633;} 
-    </style> """, unsafe_allow_html=True)
-    st.markdown('<p class="font">Upload your project plan</p>', unsafe_allow_html=True)
-
-    uploaded_file = st.file_uploader("Fill out the project plan template and upload your file here. After you upload the file, you can edit your project plan within the app.", type=['csv'], key="2")
-    if uploaded_file is not None:
-        Tasks=pd.read_csv(uploaded_file)
-        Tasks['Start'] = Tasks['Start'].astype('datetime64')
-        Tasks['Finish'] = Tasks['Finish'].astype('datetime64')
-        
-        grid_response = AgGrid(
-            Tasks,
-            editable=True, 
-            height=300, 
-            width='100%',
-            )
-
-        updated = grid_response['data']
-        df = pd.DataFrame(updated) 
-        
-        if st.button('Generate Gantt Chart'): 
-            fig = px.timeline(
-                            df, 
-                            x_start="Start", 
-                            x_end="Finish", 
-                            y="Task",
-                            color='Completion Pct',
-                            hover_name="Task Description"
-                            )
-
-            fig.update_yaxes(autorange="reversed")          #if not specified as 'reversed', the tasks will be listed from bottom up       
-            
-            fig.update_layout(
-                            title='Project Plan Gantt Chart',
-                            hoverlabel_bgcolor='#DAEEED',   #Change the hover tooltip background color to a universal light blue color. If not specified, the background color will vary by team or completion pct, depending on what view the user chooses
-                            bargap=0.2,
-                            height=600,              
-                            xaxis_title="", 
-                            yaxis_title="",                   
-                            title_x=0.5,                    #Make title centered                     
-                            xaxis=dict(
-                                    tickfont_size=15,
-                                    tickangle = 0,
-                                    rangeslider_visible=True,
-                                    side ="top",            #Place the tick labels on the top of the chart
-                                    showgrid = True,
-                                    zeroline = True,
-                                    showline = True,
-                                    showticklabels = True,
-                                    tickformat="%x\n",      #Display the tick labels in certain format. To learn more about different formats, visit: https://github.com/d3/d3-format/blob/main/README.md#locale_format
-                                    )
-                        )
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.write('---') 
-   
+    st.header("Add details about model here")
 
 elif choose == "Recommendations":
     st.session_state.app_mode = 'model'
@@ -703,18 +626,7 @@ elif choose == "Recommendations":
     #     st.write('---')
 
 elif choose == "Conclusions":
-    st.markdown(""" <style> .font {
-    font-size:35px ; font-family: 'Cooper Black'; color: #FF9633;} 
-    </style> """, unsafe_allow_html=True)
-    st.markdown('<p class="font">Contact Form</p>', unsafe_allow_html=True)
-    with st.form(key='columns_in_form2',clear_on_submit=True): #set clear_on_submit=True so that the form will be reset/cleared once it's submitted
-        #st.write('Please help us improve!')
-        Name=st.text_input(label='Please Enter Your Name') #Collect user feedback
-        Email=st.text_input(label='Please Enter Your Email') #Collect user feedback
-        Message=st.text_input(label='Please Enter Your Message') #Collect user feedback
-        submitted = st.form_submit_button('Submit')
-        if submitted:
-            st.write('Thanks for your contacting us. We will respond to your questions or inquiries as soon as possible!')
+    st.header("Add details about conclusions here")
 
 # def playlist_page():
 #     st.subheader("User Playlist")
