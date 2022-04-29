@@ -356,7 +356,7 @@ def model_page():
                 - Choose "Copy link to playlist"
             """)
             st.markdown("<br>", unsafe_allow_html=True)
-            st.image(os.path.join(cwd, 'images', 'spotify_get_playlist_uri.png'))
+            st.image(os.path.join(cwd, 'assets/images', 'spotify_get_playlist_uri.png'))
             # st.image('./assets/images/spotify_get_playlist_uri.png')
 
 
@@ -446,7 +446,7 @@ def rec_page():
 #def spr_sidebar():
 with st.sidebar:
     #model_button = st.button('Recommendation')
-    st.image(os.path.join(cwd, 'images', 'spotify.png'))
+    st.image(os.path.join(cwd, 'assets/images', 'spotify.png'))
     # st.image(spotify, width=300)
     choose = option_menu("Spotify Music Recommendation App", ["Home", "Dataset", "Model", "Recommendations", "Conclusions"],
                         icons=['house', 'file-earmark-music-fill', 'pc', 'boombox','journal'],
