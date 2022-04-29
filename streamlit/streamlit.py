@@ -4,7 +4,7 @@ import streamlit.components.v1 as html
 from  PIL import Image
 import base64
 import numpy as np
-import cv2
+# import cv2
 #from  PIL import ImageChops
 import pandas as pd
 from st_aggrid import AgGrid
