@@ -12,13 +12,13 @@ from spotipy.oauth2 import SpotifyOAuth
 ## REF ##
 # https://prettystatic.com/automate-the-spotify-api-with-python/
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 
-SPOTIPY_CLIENT_ID = os.environ('SPOTIPY_CLIENT_ID')
-SPOTIPY_CLIENT_SECRET = os.environ('SPOTIPY_CLIENT_SECRET')
-SPOTIPY_REDIRECT_URI = os.environ('SPOTIPY_REDIRECT_URI')
+SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
+SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
+SPOTIPY_REDIRECT_URI = os.getenv('SPOTIPY_REDIRECT_URI')
 
 # Spotify API endpoints
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
