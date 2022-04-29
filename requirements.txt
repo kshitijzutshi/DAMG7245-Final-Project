@@ -18,3 +18,4 @@ python-dotenv
 streamlit-aggrid
 streamlit-option-menu
 python-decouple
+pytk
