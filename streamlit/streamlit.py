@@ -446,6 +446,8 @@ def rec_page():
 #def spr_sidebar():
 with st.sidebar:
     #model_button = st.button('Recommendation')
+    print(os.getcwd())
+    print(os.path.join(cwd, '/assets/images', 'spotify.png'))
     st.image(os.path.join(cwd, '/assets/images', 'spotify.png'))
     # st.image(spotify, width=300)
     choose = option_menu("Spotify Music Recommendation App", ["Home", "Dataset", "Model", "Recommendations", "Conclusions"],
