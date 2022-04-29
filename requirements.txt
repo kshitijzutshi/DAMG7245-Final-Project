@@ -19,3 +19,4 @@ streamlit-aggrid
 streamlit-option-menu
 python-decouple
 tk
+opencv-python
