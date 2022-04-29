@@ -134,6 +134,9 @@ def update_user_option():
 if 'ml_model' not in st.session_state:
     st.session_state.ml_model = None
 
+if 'login_success' not in st.session_state:
+    st.session_state.login_success = False
+
 if 'response_url' not in st.session_state:
     st.session_state.response_url = ''
 def init_sp():
@@ -220,6 +223,20 @@ def load_spr_ml_model():
 
 
 def model_page():
+    # st.subheader("Login")
+	# 		# if password == '12345'
+    # username = st.sidebar.text_input("User Name")
+    # password = st.sidebar.text_input("User Password",type='password')
+    # #count = 0
+    # if st.sidebar.button("Login"):
+    #     # if password == '12345':
+    #     #create_usertable()
+    #     hashed_pswd = make_hashes(password)
+    #     result = login_user(username,check_hashes(password,hashed_pswd))
+        
+            
+    #     if len(result):
+    #         st.success("Logged In as {}".format(username))
     st.subheader("Select your preference")
     Types_of_Features = ("Playlist", "Song")
     st.session_state.user_selection = st.session_state.user_op
@@ -356,8 +373,11 @@ def model_page():
                 - Choose "Copy link to playlist"
             """)
             st.markdown("<br>", unsafe_allow_html=True)
-            st.image(os.path.join(cwd, '/assets/images', 'spotify_get_playlist_uri.png'))
+            st.image('./assets/images/spotify_get_playlist_uri.png')
             # st.image('./assets/images/spotify_get_playlist_uri.png')
+        # else:
+        #     st.warning("Incorrect Username/Password")
+
 
 
 def rec_page():
@@ -446,23 +466,56 @@ def rec_page():
 #def spr_sidebar():
 with st.sidebar:
     #model_button = st.button('Recommendation')
-    print(os.getcwd())
-    print(os.path.join(cwd, '/assets/images', 'spotify.png'))
-    st.image(os.path.join(cwd, '/assets/images', 'spotify.png'))
-    # st.image(spotify, width=300)
+    #print(os.getcwd())
+    print('./assets/images/spotify.png')
+    st.image('./assets/images/spotify.png')
     choose = option_menu("Spotify Music Recommendation App", ["Home", "Dataset", "Model", "Recommendations", "Conclusions"],
-                        icons=['house', 'file-earmark-music-fill', 'pc', 'boombox','journal'],
-                        menu_icon="app-indicator", default_index=0,
-                        styles={
-        "container": {"padding": "5!important", "background-color": "#fafafa", "font": "proxima nova"},
-        "icon": {"color": "#1DB954", "font-size": "25px"}, 
-        "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
-        "nav-link-selected": {"background-color": "#181818"},
-    }
-    )
+                                icons=['house', 'file-earmark-music-fill', 'pc', 'boombox','journal'],
+                                menu_icon="app-indicator", default_index=0,
+                                styles={
+                "container": {"padding": "5!important", "background-color": "#fafafa", "font": "proxima nova"},
+                "icon": {"color": "#1DB954", "font-size": "25px"}, 
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
+                "nav-link-selected": {"background-color": "#181818"},
+            }
+            )
     st.checkbox('Display Output', True, key='display_output')
     st.session_state.log_holder = st.empty()
     log_output('None')
+
+    # st.image(spotify, width=300)
+    # st.subheader("Login")
+	# # 		# if password == '12345'
+    # username = st.text_input("User Name")
+    # password = st.text_input("User Password",type='password')
+    # # #count = 0
+    # if st.sidebar.button("Login"):
+    #     # if password == '12345':
+    #     #create_usertable()
+    #     hashed_pswd = make_hashes(password)
+    #     result = login_user(username,check_hashes(password,hashed_pswd))
+        
+            
+    #     if len(result):
+            
+    #         st.success("Logged In as {}".format(username))
+    #         # choose = option_menu("Spotify Music Recommendation App", ["Home", "Dataset", "Model", "Recommendations", "Conclusions"],
+    #         #                     icons=['house', 'file-earmark-music-fill', 'pc', 'boombox','journal'],
+    #         #                     menu_icon="app-indicator", default_index=0,
+    #         #                     styles={
+    #         #     "container": {"padding": "5!important", "background-color": "#fafafa", "font": "proxima nova"},
+    #         #     "icon": {"color": "#1DB954", "font-size": "25px"}, 
+    #         #     "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
+    #         #     "nav-link-selected": {"background-color": "#181818"},
+    #         # }
+    #         # )
+    #         st.checkbox('Display Output', True, key='display_output')
+    #         st.session_state.log_holder = st.empty()
+    #         log_output('None')
+
+    #     else:
+    #         st.warning("Incorrect Username/Password")
+
 # if choose == "Recommendations":
 #             st.session_state.app_mode = 'model'
 
@@ -480,55 +533,11 @@ with st.sidebar:
 st.title('Spotify Music Recommendation App')
 # Home is where user will login
 if choose == "Home":
-#     st.markdown(
-#     f'<img src="data:image/gif;base64,{data_url}" alt="Login" width="750" height="300">',
-#     unsafe_allow_html=True,
-# )
-#Add the cover image for the cover page. Used a little trick to center the image
-    # left_column, right_column = st.columns(2)
-    # # col1, col2 = st.columns([1,2])
-    # with left_column: 
-    #     left_column.subheader("Create New Account")
-    #     new_user = st.text_input("Username")
-    #     new_password = st.text_input("Password",type='password')
-
-    #     if st.button("Signup"):
-    #         #create_usertable()
-    #         add_userdata(new_user,make_hashes(new_password), 10, datetime.datetime.now())
-    #         st.success("You have successfully created a valid Account")
-    #         st.info("Go to Login Menu to login")
-
-
-    # col1 = st.columns([1])
-
-    # with col1:
-        # pics = {}
-        # showWarningOnDirectExecution = False
-    # user = {
-    #         "fullname": fullname,
-    #         "email": email,
-    #         "password": password
-    #     }
-    # if submit_signup:
-    #     # Create Search Query
-    #     data = {'fullname':  [fullname],
-    #             'email': [email],
-    #             'api_count': [2]
-    #     }
-
-    #     df = pd.DataFrame(data, columns = ['fullname', 'email', 'api_count'])              # To display the header text using css style
-    #     st.markdown(""" <style> .font {
-    #     font-size:35px ; font-family: 'Cooper Black'; color: #FF9633;} 
-    #     </style> """, unsafe_allow_html=True)
-    #     st.markdown('<p class="font">About the Creator</p>', unsafe_allow_html=True)
-        
-                  # To display brand log
-        st.subheader("Login")
-			# if password == '12345'
-        username = st.text_input("User Name")
-        password = st.text_input("User Password",type='password')
-        #count = 0
-        if st.button("Login"):
+    st.subheader("Login")
+	# # 		# if password == '12345'
+    username = st.text_input("User Name")
+    password = st.text_input("User Password",type='password')
+    if st.button("Login"):
             # if password == '12345':
             #create_usertable()
             hashed_pswd = make_hashes(password)
@@ -538,6 +547,7 @@ if choose == "Home":
             if len(result):
                 
                 st.success("Logged In as {}".format(username))
+                st.session_state.login_success=True
 
 				# task = st.selectbox("Task",["Add Post","Analytics","Profiles"])
 				# if task == "Add Post":
@@ -553,16 +563,16 @@ if choose == "Home":
             else:
                 st.warning("Incorrect Username/Password")
 
-        elif st.checkbox("Not a Exisiting User?"):
-            st.subheader("Create New Account")
-            new_user = st.text_input("Username")
-            new_password = st.text_input("Password",type='password')
+    elif st.checkbox("New User?"):
+        st.subheader("Create New Account")
+        new_user = st.text_input("Username")
+        new_password = st.text_input("Password",type='password')
 
-            if st.button("Signup"):
-            #create_usertable()
-                add_userdata(new_user,make_hashes(new_password), 10, datetime.datetime.now())
-                st.success("You have successfully created a valid Account")
-                st.info("Go to Login Menu to login")
+        if st.button("Signup"):
+        #create_usertable()
+            add_userdata(new_user,make_hashes(new_password), 10, datetime.datetime.now())
+            st.success("You have successfully created a valid Account")
+            st.info("Go to Login Menu to login")
 
 
     
@@ -574,10 +584,34 @@ elif choose == "Dataset":
 elif choose == "Model":
     st.header("Add details about model here")
 
+
 elif choose == "Recommendations":
+
     st.session_state.app_mode = 'model'
-    if st.session_state.app_mode == 'model':
+    if st.session_state.app_mode == 'model' and st.session_state.login_success:
         model_page()
+    else:
+        st.warning("Please Login to get Recommendations")
+    # st.subheader("Login")
+	# # 		# if password == '12345'
+    # username = st.text_input("User Name")
+    # password = st.text_input("User Password",type='password')
+    # # #count = 0
+    # if st.button("Login"):
+    #     # if password == '12345':
+    #     #create_usertable()
+    #     hashed_pswd = make_hashes(password)
+    #     result = login_user(username,check_hashes(password,hashed_pswd))
+        
+            
+    #     if len(result):
+    #         st.success("Logged In as {}".format(username))
+    #         st.session_state.app_mode = 'model'
+    #         if st.session_state.app_mode == 'model':
+    #             model_page()
+
+    #     else:
+    #         st.warning("Incorrect Username/Password")
     #st.session_state.app_mode = 'recommend'
     # st.markdown(""" <style> .font {
     # font-size:35px ; font-family: 'Cooper Black'; color: #FF9633;} 
