@@ -579,10 +579,76 @@ if choose == "Home":
         
 
 elif choose == "Dataset":
-    st.header("Add details about dataset here")
+    st.markdown("<br>", unsafe_allow_html=True)
+    """
+    ## Spotify Million Playlist Dataset
+    -----------------------------------
+    For this project we are using The Million Playist Dataset, as it name implies, the dataset consists of one million playlists and each playlists 
+    contains n number of songs and some metadata is included as well such as name of the playlist, duration, number of songs, number of artists, etc.
+    
+    It is created by sampling playlists from the billions of playlists that Spotify users have created over the years. 
+    Playlists that meet the following criteria were selected at random:
+    - Created by a user that resides in the United States and is at least 13 years old
+    - Was a public playlist at the time the MPD was generated
+    - Contains at least 5 tracks
+    - Contains no more than 250 tracks
+    - Contains at least 3 unique artists
+    - Contains at least 2 unique albums
+    - Has no local tracks (local tracks are non-Spotify tracks that a user has on their local device
+    - Has at least one follower (not including the creator
+    - Was created after January 1, 2010 and before December 1, 2017
+    - Does not have an offensive title
+    - Does not have an adult-oriented title if the playlist was created by a user under 18 years of age
+    
+    As you can imagine a million anything is too large to handle and we are going to be using 2% of the data (20,000 playlists) to create the models 
+    and then using it to train the model on AWS SageMaker and then use it to make predictions by exposing the model as a REST API Endpoint.
+   
+    ### Enhancing the data:
+    Since this dataset is released by Spotify, it already includes a track id that can be used to generate API calls and 
+    access the multiple information that is provided from Spotify for a given song, artist or user.
+    These are some of the features that are available to us for each song and we are going to use them to enhance our dataset and to help matching 
+    the user's favorite playlist.
+    
+    ##### Some of the available features are the following, they are measured mostly in a scale of 0-1:
+    - **acousticness:** Confidence measure from 0.0 to 1.0 on if a track is acoustic.   
+    - **danceability:** Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, 
+    rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.   
+    - **energy:** Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, 
+    energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. 
+    Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.   
+    - **instrumentalness:** Predicts whether a track contains no vocals. “Ooh” and “aah” sounds are treated as instrumental in this context. Rap or 
+    spoken word tracks are clearly “vocal”. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. 
+    Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.   
+    - **liveness:** Detects the presence of an audience in the recording. Higher liveness values represent an increased probability 
+    that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.   
+    - **loudness:** The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful 
+    for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical 
+    strength (amplitude). Values typical range between -60 and 0 db.   
+    - **speechiness:** Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording 
+    (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably 
+    made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in 
+    sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.   
+    - **tempo:** The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the 
+    speed or pace of a given piece and derives directly from the average beat duration.   
+    - **valence:** A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound 
+    more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).   
+    
+    Information about features: [link](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features)
+    """
+    st.markdown("<br>", unsafe_allow_html=True)
+
 
 elif choose == "Model":
-    st.header("Add details about model here")
+    st.header('Spotify Playlist Recommender (SPR) Model')
+    st.markdown('---')
+    st.markdown("<br>", unsafe_allow_html=True)
+    """
+    For this project we used the Unsupervised learning model - K Means Clustering.
+    The training and deployment of the K-Means Clustering algorithm was done using AWS SageMaker.  Amazon Sagemaker is a cloud machine learning platform that enables developers to build, train and deploy ML models quickly.
+    For detailed walkthrough of the process, there is a Youtube video walkthrough created by us here - 
+    """
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.video('https://www.youtube.com/watch?v=_ZriVJjLF6Q&t=420s')
 
 
 elif choose == "Recommendations":
@@ -662,7 +728,34 @@ elif choose == "Recommendations":
     #     st.write('---')
 
 elif choose == "Conclusions":
-    st.header("Add details about conclusions here")
+    st.markdown("<br>", unsafe_allow_html=True)
+    """
+    ## Conclusions:
+    --------------
+    As part of this Capstone, together we learnt so many new areas and it's my pleasure to be part of my amazing team. We all enjoyed throughout this two months journey.
+
+    One of the reasons why we wanted to go with a full stack project was to gain experience and to touch all of the areas needed to create a 
+    product that anyone can use from anywhere and with the resources we had we were able to do it.
+    
+    This project touched on so many areas that I will try to summarize below.
+    - **Data Collection** — Even though the core dataset we used was provided by Spotify, we still needed to go and look for other data sources 
+    to enhance the data and combine it with the core data set. This activity involved an API setup and parsing the dataset.
+    - **Unsupervised Learning** — We decided to take an innovative approach where we are aiming for novelty where a given user is predicted into a 
+    cluster and then computing a distance to recommend a set of tracks. Exploring different families of cluster algorithms and learning about 
+    advantages and disadvantages to make the best selection as well as deciding which measure distance makes the most sense for our purposes.<br>
+    - **Efficient Data Processing** — Midway through the project when we wanted to use the full 1M dataset we realized that it represents its own challenge and 
+    we needed to rework the code to be able to not only run our analysis but to actually finalize the analysis. One thing that was a life saver was to develop 
+    an SQLite database where the computing was reduced by 98%. Also by leveraging multiple API calls we were able to reduce the compute time from 40hours to 30minutes. 
+    When dealing with this big of a dataset you need to get creative and write very efficient code.
+    - **Big Data** — Besides being efficient there are natural constraints about how to handle the data and as efficient as you can be the data itself will need high 
+    computing power. To train and score our model we needed to run the analysis on a 192 GB instance with 42 cores. Without this, we would've not been able to finish on time.
+    - **Cloud Computing** — To cover the last two points on having efficient data processing due to the size of data that we have, this also led us to a journey with cloud 
+    computing experience and we picked AWS as our choice. Thanks to Amazon AWS for giving us the generous credits as a part of an education institution to support our learning.
+    - **Deployment** — Nowadays, UX and overall Frontend is taken for granted but to actually put something up with models running in the background is not easy. 
+    In this application we made a Streamlit app that can be deployed to a server and deployed to a web app.
+
+    """
+    st.markdown("<br>", unsafe_allow_html=True)
 
 # def playlist_page():
 #     st.subheader("User Playlist")
