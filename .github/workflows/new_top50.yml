@@ -15,11 +15,9 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.8 #install the python needed
-      - name: install dependencies # install dependencies for py file run
+      - name: install dependencies and run py # install dependencies for py file run
         run: |
           pip install -r requirements.txt
-      - name: execute py script # run the run.py to get the latest data
-        run: |
           python avg_album_length_playlist.py
         env:
           SPOTIPY_CLIENT_ID:   ${{ secrets.SPOTIPY_CLIENT_ID }}
