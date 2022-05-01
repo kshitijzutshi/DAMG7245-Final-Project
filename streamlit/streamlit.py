@@ -732,12 +732,10 @@ elif choose == "Conclusions":
     """
     ## Conclusions:
     --------------
-    As part of this Capstone, together we learnt so many new areas and it's my pleasure to be part of my amazing team. We all enjoyed throughout this two months journey.
+    As part of this Final project, together we learnt different aspects of building an end-to-end big data project - from development to deployment!            
 
-    One of the reasons why we wanted to go with a full stack project was to gain experience and to touch all of the areas needed to create a 
-    product that anyone can use from anywhere and with the resources we had we were able to do it.
     
-    This project touched on so many areas that I will try to summarize below.
+    This project touched on various aspects of depvelopment such as - 
     - **Data Collection** — Even though the core dataset we used was provided by Spotify, we still needed to go and look for other data sources 
     to enhance the data and combine it with the core data set. This activity involved an API setup and parsing the dataset.
     - **Unsupervised Learning** — We decided to take an innovative approach where we are aiming for novelty where a given user is predicted into a 
@@ -747,10 +745,7 @@ elif choose == "Conclusions":
     we needed to rework the code to be able to not only run our analysis but to actually finalize the analysis. One thing that was a life saver was to develop 
     an SQLite database where the computing was reduced by 98%. Also by leveraging multiple API calls we were able to reduce the compute time from 40hours to 30minutes. 
     When dealing with this big of a dataset you need to get creative and write very efficient code.
-    - **Big Data** — Besides being efficient there are natural constraints about how to handle the data and as efficient as you can be the data itself will need high 
-    computing power. To train and score our model we needed to run the analysis on a 192 GB instance with 42 cores. Without this, we would've not been able to finish on time.
-    - **Cloud Computing** — To cover the last two points on having efficient data processing due to the size of data that we have, this also led us to a journey with cloud 
-    computing experience and we picked AWS as our choice. Thanks to Amazon AWS for giving us the generous credits as a part of an education institution to support our learning.
+    - **Big Data** — Dealing with such a large playlist data requires a lot of computing power. We relied on AWS services to train our model and deploy it as an endpoint.
     - **Deployment** — Nowadays, UX and overall Frontend is taken for granted but to actually put something up with models running in the background is not easy. 
     In this application we made a Streamlit app that can be deployed to a server and deployed to a web app.
 
