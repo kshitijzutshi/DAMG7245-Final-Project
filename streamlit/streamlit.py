@@ -245,124 +245,137 @@ def model_page():
     if st.session_state.user_selection == "Playlist":
         st.session_state.playlist_url = st.session_state.example_url
         st.text_input("Playlist URI", key='playlist_url', on_change=update_playlist_url)
-        playlist_uri = st.session_state.playlist_url.split('/')[-1]
-        st.session_state.spr = SpotifyRecommendations(playlist_uri=playlist_uri)
-        st.session_state.spr.log_output = log_output
-        playlist_page()
-        st.markdown("<br>", unsafe_allow_html=True)
-        get_rec = st.button("Get Recommendations", key='pl', on_click=get_recommendations, args=('playlist',))
+        if len(st.session_state.playlist_url) == 0 or (not st.session_state.playlist_url.startswith('https://open.spotify.com')):
+            st.warning('Please enter a valid Spotify playlist URI')
+        else:
         
-        if get_rec:
-            if st.session_state.rec_type == 'playlist':
-                st.subheader('Recommendations based on Playlist:')
-
-            status_holder = st.empty()
-            rec_songsholder = st.empty()
-            user_fbholder = st.empty()
-
-            left_column, middle_column, right_column = st.columns(3)
-            with left_column:
-                fb_plotholder = st.empty()
-            with middle_column:
-                playlist_wordcloud_holder = st.empty()
-                user_cluster_all_holder = st.empty()
-                
-            with right_column:
-                genre_wordcloud_holder = st.empty()
-                user_cluster_single_holder = st.empty()
-            if st.session_state.ml_model is None:
-                with status_holder:
-                    with st.spinner('Loading ML Model...'):
-                        load_spr_ml_model()
-                    st.success('ML Model Loaded!')
-            else:
-                log_output('ML model is already loaded')
+            playlist_uri = st.session_state.playlist_url.split('/')[-1]
+            st.session_state.spr = SpotifyRecommendations(playlist_uri=playlist_uri)
+            st.session_state.spr.log_output = log_output
+            playlist_page()
+            st.markdown("<br>", unsafe_allow_html=True)
+            get_rec = st.button("Get Recommendations", key='pl', on_click=get_recommendations, args=('playlist',))
             
-            if st.session_state.got_rec == False:
-                spr = st.session_state.spr
-                spr.set_ml_model(st.session_state.ml_model)
-                with status_holder:
-                    with st.spinner('Getting Recommendations...'):
-                        spr.len_of_favs = st.session_state.rec_type
-                        spr.log_output = log_output
-                        st.session_state.rec_uris = spr.get_songs_recommendations(n=10)
-                        # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
-                        # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
-                        st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
-                        st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
-                        st.session_state.got_rec = True
-                    st.success('Here are top 10 recommendations!')
-            else:
-                log_output('Showing already found recommendations')
+            if get_rec:
+                if st.session_state.rec_type == 'playlist':
+                    st.subheader('Recommendations based on Playlist:')
 
-            insert_songs(rec_songsholder, st.session_state.rec_uris)
+                status_holder = st.empty()
+                rec_songsholder = st.empty()
+                user_fbholder = st.empty()
+
+                left_column, middle_column, right_column = st.columns(3)
+                with left_column:
+                    fb_plotholder = st.empty()
+                with middle_column:
+                    playlist_wordcloud_holder = st.empty()
+                    user_cluster_all_holder = st.empty()
+                    
+                with right_column:
+                    genre_wordcloud_holder = st.empty()
+                    user_cluster_single_holder = st.empty()
+                if st.session_state.ml_model is None:
+                    with status_holder:
+                        with st.spinner('Loading ML Model...'):
+                            load_spr_ml_model()
+                        st.success('ML Model Loaded!')
+                else:
+                    log_output('ML model is already loaded')
+                
+                if st.session_state.got_rec == False:
+                    spr = st.session_state.spr
+                    spr.set_ml_model(st.session_state.ml_model)
+                    with status_holder:
+                        with st.spinner('Getting Recommendations...'):
+                            spr.len_of_favs = st.session_state.rec_type
+                            spr.log_output = log_output
+                            st.session_state.rec_uris = spr.get_songs_recommendations(n=10)
+                            # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
+                            # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
+                            st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
+                            st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
+                            st.session_state.got_rec = True
+                        st.success('Here are top 10 recommendations!')
+                else:
+                    log_output('Showing already found recommendations')
+
+                insert_songs(rec_songsholder, st.session_state.rec_uris)
     else:
-        # first create a state for the text box update value
-
         st.session_state.song_name = st.session_state.example_song_name
         st.text_input("Song name", key='song_name', on_change=update_song_name)
         
         song_name = st.session_state.song_name
-        # playlist_uri = st.session_state.playlist_url.split('/')[-1]
-        st.session_state.spr = SpotifyRecommendations(song_name=song_name)
-        load_spr_ml_model()
-        spr = st.session_state.spr
-        spr.set_ml_model(st.session_state.ml_model)
-        track_uri = st.session_state.spr.get_track_uri_from_track_name()
-        st.session_state.spr.log_output = log_output
-        st.subheader("User's Song")
-        st.markdown('---')
-        uri_link = 'https://open.spotify.com/embed/track/' + track_uri
-        components.iframe(uri_link, height=300)
-        #song_name_page(track_uri)
-        st.markdown("<br>", unsafe_allow_html=True)
-        get_rec = st.button("Get Recommendations", key='song', on_click=get_song_name_recommendations, args=('song',))
-        
-        if get_rec:
-            if st.session_state.rec_type == 'song':
-                st.subheader('Recommendations based on Song:')
+        playlists_db_path = '../data/spotify_20K_playlists.db'
 
-            status_holder = st.empty()
-            rec_songsholder = st.empty()
-            user_fbholder = st.empty()
-
-            left_column, middle_column, right_column = st.columns(3)
-            with left_column:
-                fb_plotholder = st.empty()
-            with middle_column:
-                playlist_wordcloud_holder = st.empty()
-                user_cluster_all_holder = st.empty()
-                
-            with right_column:
-                genre_wordcloud_holder = st.empty()
-                user_cluster_single_holder = st.empty()
-            if st.session_state.ml_model is None:
-                with status_holder:
-                    with st.spinner('Loading ML Model...'):
-                        load_spr_ml_model()
-                    st.success('ML Model Loaded!')
-            else:
-                log_output('ML model is already loaded')
+        conn = sqlite3.connect(playlists_db_path)
+        tracks_df = pd.read_sql('select * from tracks', conn)
+        track_idx = tracks_df[tracks_df['track_name'].str.lower() == song_name.lower()]['track_id']
+        # first create a state for the text box update value
+        if len(song_name) == 0:
+            st.warning("Please enter a valid song name to see Recommendations")
+        elif len(track_idx) == 0:
+            st.warning("Song not found in Spotify App database. Please enter a valid song name to see Recommendations")
+        else:
+            # playlist_uri = st.session_state.playlist_url.split('/')[-1]
+            st.session_state.spr = SpotifyRecommendations(song_name=song_name)
+            load_spr_ml_model()
+            spr = st.session_state.spr
+            spr.set_ml_model(st.session_state.ml_model)
+            track_uri = st.session_state.spr.get_track_uri_from_track_name()
+            st.session_state.spr.log_output = log_output
+            st.subheader("User's Song")
+            st.markdown('---')
+            uri_link = 'https://open.spotify.com/embed/track/' + track_uri
+            components.iframe(uri_link, height=300)
+            #song_name_page(track_uri)
+            st.markdown("<br>", unsafe_allow_html=True)
+            get_rec = st.button("Get Recommendations", key='song', on_click=get_song_name_recommendations, args=('song',))
             
-            if st.session_state.got_rec == False:
-                spr = st.session_state.spr
-                spr.set_ml_model(st.session_state.ml_model)
-                with status_holder:
-                    with st.spinner('Getting Recommendations...'):
-                        spr.len_of_favs = st.session_state.rec_type
-                        spr.log_output = log_output
-                        
-                        st.session_state.rec_uris = spr.get_song_recommendation_from_song_name(n=10)
-                        # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
-                        # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
-                        # st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
-                        # st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
-                        st.session_state.got_rec = True
-                    st.success('Here are top 10 recommendations!')
-            else:
-                log_output('Showing already found recommendations')
+            if get_rec:
+                if st.session_state.rec_type == 'song':
+                    st.subheader('Recommendations based on Song:')
 
-            insert_songs(rec_songsholder, st.session_state.rec_uris)
+                status_holder = st.empty()
+                rec_songsholder = st.empty()
+                user_fbholder = st.empty()
+
+                left_column, middle_column, right_column = st.columns(3)
+                with left_column:
+                    fb_plotholder = st.empty()
+                with middle_column:
+                    playlist_wordcloud_holder = st.empty()
+                    user_cluster_all_holder = st.empty()
+                    
+                with right_column:
+                    genre_wordcloud_holder = st.empty()
+                    user_cluster_single_holder = st.empty()
+                if st.session_state.ml_model is None:
+                    with status_holder:
+                        with st.spinner('Loading ML Model...'):
+                            load_spr_ml_model()
+                        st.success('ML Model Loaded!')
+                else:
+                    log_output('ML model is already loaded')
+                
+                if st.session_state.got_rec == False:
+                    spr = st.session_state.spr
+                    spr.set_ml_model(st.session_state.ml_model)
+                    with status_holder:
+                        with st.spinner('Getting Recommendations...'):
+                            spr.len_of_favs = st.session_state.rec_type
+                            spr.log_output = log_output
+                            
+                            st.session_state.rec_uris = spr.get_song_recommendation_from_song_name(n=10)
+                            # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
+                            # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
+                            # st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
+                            # st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
+                            st.session_state.got_rec = True
+                        st.success('Here are top 10 recommendations!')
+                else:
+                    log_output('Showing already found recommendations')
+
+                insert_songs(rec_songsholder, st.session_state.rec_uris)
 
 
         with st.expander("Here's how to find any Playlist URL in Spotify"):
