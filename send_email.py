@@ -7,7 +7,9 @@ from email.header import Header
 from dotenv import load_dotenv
 load_dotenv()
 
-user_data_path = './streamlit/new1.csv'
+cwd = os.getcwd()
+
+user_data_path = os.path.join(cwd, 'streamlit', 'new1.csv')
 
 user_data_df = pd.read_csv(user_data_path)
 
