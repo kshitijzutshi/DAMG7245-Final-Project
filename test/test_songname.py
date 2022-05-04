@@ -2,10 +2,6 @@ import os
 from numpy.core.arrayprint import format_float_positional
 import numpy as np
 import pandas as pd
-from dotenv import load_dotenv
-
-# from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 import pytest
 
 cwd = os.getcwd()
