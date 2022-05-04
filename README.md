@@ -2,10 +2,20 @@
 
 ![image](https://user-images.githubusercontent.com/13203059/163527232-91f5d9e5-7bd0-4ca4-a251-c22e0419876e.png)
 
+[![PyPI](https://img.shields.io/pypi/pyversions/locust.svg)](https://pypi.org/project/locust/)
+![Tests](https://github.com/kshitijzutshi/DAMG7245-Final-Project/actions/workflows/testing_workflow.yml/badge.svg)
+
+
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
+![](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
+![](https://img.shields.io/badge/Spotify-1ED760?&style=for-the-badge&logo=spotify&logoColor=white)
+![](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 
 # CLaaT Document
 
-[Access the Claat document here](https://codelabs-preview.appspot.com/?file_id=12z0C4Hw5840SwWBf6vqpAS81ir7TEm-NcLhjHyZOQW4#7) 🚀
+[Access the Claat document here](https://codelabs-preview.appspot.com/?file_id=12z0C4Hw5840SwWBf6vqpAS81ir7TEm-NcLhjHyZOQW4#12) 🚀
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/kshitijzutshi/DAMG7245-Final-Project)
 
@@ -40,7 +50,7 @@ The dataset contains 1,000,000 playlists, including playlist titles and track ti
 
 1. Data Preprocessing 
 2. Understanding the Dataset - Exploratory Data Analysis(EDA)
-3. Building a pipeline system using pretrained model and also using various tools/softwares(AWS Sagemaker, Airflow, Streamlit, GCP)
+3. Building a pipeline system using pretrained model and also using various tools/softwares(AWS Sagemaker, Streamlit, GCP)
 4. Deploying the model on AWS
 5. Build a web application using streamlit for showcasing the results.
 
@@ -61,17 +71,18 @@ System integration, Testing and documentation
 
 # Deployment Details
 
-Language : Python
-Container : Docker
-Cloud Tools : Google Cloud Storage, Amazon Web Services
-Tools for Analysis : Visual Studio code.
-Streamlit, airflow
+The Spotify music recommendation app has been deployed on Google Cloud Compute Engine and Streamlit ☁
+
 
 # Github Actions - Workflows
 
 1. Close an Issue if the comment says "close issue"
 
 ![close-issue-actions](https://user-images.githubusercontent.com/13203059/165130958-945f07cb-cfc2-43c2-a40f-7f5e790b8c25.gif)
+
+2. Pytest and coverage test on multiple versions of python and OS - On each push/pull request
+
+![image](https://user-images.githubusercontent.com/13203059/166744789-e49f6682-7246-4757-84c6-d0a06e6b36c9.png)
 
 
 
@@ -93,7 +104,9 @@ User Interface will be built using Streamlit and deployed on streamlit cloud.
 
 
 
-
+<!-- <a href = "https://github.com/kshitijzutshi/DAMG7245-Final-Project/graphs/contributors">
+<img src = "https://contrib.rocks/image?repo = GitHub_username/repository_name"/>
+</a> -->
 
 
 
