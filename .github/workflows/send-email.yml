@@ -1,0 +1,28 @@
+name: Weekly Spotify Recommendation
+    
+on:
+  schedule:
+    - cron: "0 */3 * * *" #runs at 00:00 UTC every Monday -> every 15th minute
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v3 # checkout the repository content to github runner.
+      - name: setup python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8 #install the python needed
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy python-dotenv
+      - name: Run Email Script
+        run: |
+          python send_email.py
+        env:
+          EMAIL_ADDRESS:   ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+                                 
