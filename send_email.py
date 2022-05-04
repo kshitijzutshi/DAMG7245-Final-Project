@@ -9,7 +9,7 @@ load_dotenv()
 
 cwd = os.getcwd()
 
-user_data_path = os.path.join(cwd, 'streamlit', 'new1.csv')
+user_data_path = os.path.join(cwd, 'streamlit', 'new.csv')
 
 user_data_df = pd.read_csv(user_data_path)
 
