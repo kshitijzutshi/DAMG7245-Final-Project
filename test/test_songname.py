@@ -27,9 +27,9 @@ import pytest
 
 cwd = os.getcwd()
 
-playlists_db_path = '../data/spotify_20K_playlists.db'
+# playlists_db_path = '../data/spotify_20K_playlists.db'
 
-conn = sqlite3.connect(playlists_db_path)
+# conn = sqlite3.connect(playlists_db_path)
 
 # Pytest fixtures decorator allows to connect the db once, be visible across the scope
 # and then close connection when all tests complete
@@ -40,8 +40,11 @@ conn = sqlite3.connect(playlists_db_path)
 #     with db.connect(url) as conn:  # connection will be torn down after all tests finish
 #         yield conn
 
-tracks_df = pd.read_sql('select * from tracks', conn)
-track_name = ['Toxic', 'Stairway to Heaven', 'Save your tears', 'Neon','Mockingbird', 'Dream on', 'Hotel California', "Sweet Child O' Mine", 'Smells Like Teen Spirit', 'For the Love of God']
+# tracks_df = pd.read_sql('select * from tracks', conn)
+tracks_df = pd.read_csv('test/tracks_10.csv')
+track_name = ['Toxic', 'Rock Your Body', 'Run It!', 'Replay',
+       'One Less Lonely Girl', 'Somebody To Love', 'Eye of the Tiger',
+       'Stairway To Heaven', 'Sympathy For The Devil', 'Kashmir']
 
 
 def test_answer():
@@ -54,10 +57,10 @@ def test_answer():
     assert len(track_id2) > 0
     
     track_id3 = tracks_df[tracks_df['track_name'].str.lower() == track_name[2].lower()]['track_id']
-    assert len(track_id3.tolist()) ==  0
+    assert len(track_id3) > 0
 
     track_id4 = tracks_df[tracks_df['track_name'].str.lower() == track_name[3].lower()]['track_id']
-    assert len(track_id4.tolist()) > 0
+    assert len(track_id4) > 0
     
     track_id5 = tracks_df[tracks_df['track_name'].str.lower() == track_name[4].lower()]['track_id']
     assert len(track_id5) > 0
