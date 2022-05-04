@@ -1,28 +1,7 @@
 import os
-import re
-import base64
-import datetime
-import platform
 from numpy.core.arrayprint import format_float_positional
-import requests
-import spotipy
-import time
-import random
-import pickle
-import sqlite3
-from sqlite3 import Error
 import numpy as np
 import pandas as pd
-import plotly.express as px
-from urllib.parse import urlencode
-from urllib.request import urlopen
-from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
-from scipy.spatial.distance import cdist
-import seaborn as sns
-from dotenv import load_dotenv
-
-# from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 import pytest
 
 cwd = os.getcwd()
