@@ -133,6 +133,9 @@ if 'recently_searched_song' not in st.session_state:
 if 'username_loggedin' not in st.session_state:
     st.session_state.username_loggedin = ''
 
+if 'user_admin' not in st.session_state:
+    st.session_state.user_admin = ''
+
 if 'app_mode' not in st.session_state:
     st.session_state.app_mode = 'home'
 if 'is_admin' not in st.session_state:
@@ -718,6 +721,7 @@ elif choose == "Admin":
             if (username == 'admin') and (password == 'admin'):
                 
                 st.success("Logged In as {}".format(username))
+                st.session_state.useradmin=username
                 #st.session_state.login_success=True
                 
                 
@@ -735,6 +739,73 @@ elif choose == "Admin":
 				# 	st.dataframe(clean_db)
             else:
                 st.warning("Incorrect Username/Password")
+    user_data = pd.read_csv("new.csv")
+    total_count = int(user_data["Count"].sum())
+    love_it_value = 10
+    like_it_value = 7.5
+    okay_value = 5
+    hate_it = 2.5
+    # per_user_avg_rating = (love_it_value*user_data["user_data"] + like_it_value*user_data["like_it"] + okay_value*user_data["okay"] + hate_it*user_data["hate_it"])/40
+    avg_rating_loved_it = round(user_data["loved_it"].mean(), 1)
+    avg_rating_like_it = round(user_data["like_it"].mean(), 1)
+    avg_rating_okay = round(user_data["okay"].mean(), 1)
+    avg_rating_hate_it = round(user_data["hate_it"].mean(), 1)
+
+    overall_average_rating = round((avg_rating_loved_it+avg_rating_like_it+avg_rating_okay+avg_rating_hate_it/4), 1)
+    star_rating = ":star:" * int(round(overall_average_rating, 0))
+    # get latest timestamp from dataframe 
+    last_accessed_timestamp = user_data["Timestamp"].max()
+
+    if st.session_state.useradmin == 'admin':
+        st.subheader(":bar_chart: Admin Panel Dashboard")
+        st.markdown("##")
+
+        left_column, middle_column, right_column = st.columns(3)
+        with left_column:
+            st.subheader(":hash: Total Usage:")
+            st.subheader(f"{total_count}")
+        with middle_column:
+            st.subheader("Average Rating:")
+            st.subheader(f"{overall_average_rating} {star_rating}")
+        with right_column:
+            st.subheader(":hourglass_flowing_sand: Last User Activity On:")
+            st.subheader(f"{last_accessed_timestamp}")
+
+        st.markdown("""---""")
+
+    
+    # Count by User name [BAR CHART]
+    count_by_user_name = (
+        user_data.groupby(by=["Username"]).sum()[["Count"]].sort_values(by="Count")
+    )
+    fig_count_by_user_name = px.bar(
+        count_by_user_name,
+        x="Count",
+        y=count_by_user_name.index,
+        orientation="h",
+        title="<b>Count by User name</b>",
+        color_discrete_sequence=["#0083B8"] * len(count_by_user_name),
+        template="plotly_white",
+    )
+    fig_count_by_user_name.update_layout(
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=(dict(showgrid=False))
+    )
+
+    fig = px.bar(user_data, x="Username", y=["loved_it", "like_it", "okay", "hate_it"], barmode='group', height=400)
+    # st.dataframe(df) # if need to display dataframe
+    # st.plotly_chart(fig)
+    fig.update_layout(
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=(dict(showgrid=False))
+    )
+
+
+    left_column, right_column = st.columns(2)
+    left_column.plotly_chart(fig, use_container_width=True)
+    right_column.plotly_chart(fig_count_by_user_name, use_container_width=True)
+          
+    
     # st.markdown("<br>", unsafe_allow_html=True)
     # """
     # ## Spotify Million Playlist Dataset
