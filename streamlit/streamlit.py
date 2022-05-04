@@ -109,6 +109,15 @@ def read_count(username):
 # logo = Image.open(r'./assets/images/logo.png')
 # profile = Image.open(r'./assets/images/twitter-logo.png')
 # spotify = Image.open(r'./assets/images/spotify.png')
+if 'genre_wordcloud_fig' not in st.session_state:
+    st.session_state.genre_wordcloud_fig = None
+if 'playlist_wordcloud_fig' not in st.session_state:
+    st.session_state.playlist_wordcloud_fig = None
+if 'user_cluster_all_fig' not in st.session_state:
+    st.session_state.user_cluster_all_fig = None
+if 'user_cluster_single_fig' not in st.session_state:
+    st.session_state.user_cluster_single_fig = None
+
 if 'app_mode' not in st.session_state:
     st.session_state.app_mode = 'home'
 if 'is_admin' not in st.session_state:
@@ -133,6 +142,9 @@ def update_user_option():
 
 if 'ml_model' not in st.session_state:
     st.session_state.ml_model = None
+
+if 'count_current' not in st.session_state:
+    st.session_state.count_current = 0
 
 if 'login_success' not in st.session_state:
     st.session_state.login_success = False
@@ -221,6 +233,10 @@ def log_output(new_text):
 def load_spr_ml_model():
     st.session_state.ml_model = SPR_ML_Model()
 
+def get_current_count():
+    st.session_state.count_current = read_count(username)
+
+
 
 def model_page():
     # st.subheader("Login")
@@ -256,7 +272,9 @@ def model_page():
             st.markdown("<br>", unsafe_allow_html=True)
             get_rec = st.button("Get Recommendations", key='pl', on_click=get_recommendations, args=('playlist',))
             
+            
             if get_rec:
+                
                 if st.session_state.rec_type == 'playlist':
                     st.subheader('Recommendations based on Playlist:')
 
@@ -267,6 +285,7 @@ def model_page():
                 left_column, middle_column, right_column = st.columns(3)
                 with left_column:
                     fb_plotholder = st.empty()
+
                 with middle_column:
                     playlist_wordcloud_holder = st.empty()
                     user_cluster_all_holder = st.empty()
@@ -274,6 +293,7 @@ def model_page():
                 with right_column:
                     genre_wordcloud_holder = st.empty()
                     user_cluster_single_holder = st.empty()
+
                 if st.session_state.ml_model is None:
                     with status_holder:
                         with st.spinner('Loading ML Model...'):
@@ -290,8 +310,8 @@ def model_page():
                             spr.len_of_favs = st.session_state.rec_type
                             spr.log_output = log_output
                             st.session_state.rec_uris = spr.get_songs_recommendations(n=10)
-                            # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
-                            # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
+                            st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
+                            st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
                             st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
                             st.session_state.user_cluster_single_fig = spr.get_user_cluster_single_fig()
                             st.session_state.got_rec = True
@@ -300,6 +320,34 @@ def model_page():
                     log_output('Showing already found recommendations')
 
                 insert_songs(rec_songsholder, st.session_state.rec_uris)
+                if st.session_state.got_feedback == False:
+                    with user_fbholder:
+                        c1, c2, c3, c4 = st.columns((1, 1, 1, 1))
+                        with c1:
+                            st.button("Love it", key='love', on_click=add_feedback, args=('Love it',))
+                        with c2:
+                            st.button("Like it", key='like', on_click=add_feedback, args=('Like it',))
+                        with c3:
+                            st.button("Okay", key='okay', on_click=add_feedback, args=('Okay',))
+                        with c4:
+                            st.button("Hate it", key='hate', on_click=add_feedback, args=('Hate it',))
+
+                with fb_plotholder:
+                    try:
+                        feedback_db = User_FeedbackDB()
+                        fig = feedback_db.get_feedback_plot()
+                        del feedback_db
+                        if fig:
+                            st.subheader('User Feedback:')
+                            st.plotly_chart(fig, use_container_width=True)
+                    except:
+                        pass
+
+                genre_wordcloud_holder.pyplot(st.session_state.genre_wordcloud_fig)
+                playlist_wordcloud_holder.pyplot(st.session_state.playlist_wordcloud_fig)
+                user_cluster_all_holder.pyplot(st.session_state.user_cluster_all_fig)
+                user_cluster_single_holder.pyplot(st.session_state.user_cluster_single_fig)
+
     else:
         st.session_state.song_name = st.session_state.example_song_name
         st.text_input("Song name", key='song_name', on_change=update_song_name)
@@ -332,6 +380,7 @@ def model_page():
             get_rec = st.button("Get Recommendations", key='song', on_click=get_song_name_recommendations, args=('song',))
             
             if get_rec:
+                
                 if st.session_state.rec_type == 'song':
                     st.subheader('Recommendations based on Song:')
 
@@ -482,7 +531,7 @@ with st.sidebar:
     #print(os.getcwd())
     print('./assets/images/spotify.png')
     st.image('./assets/images/spotify.png')
-    choose = option_menu("Spotify Music Recommendation App", ["Home", "Dataset", "Model", "Recommendations", "Conclusions"],
+    choose = option_menu("Spotify Music Recommendation App", ["Home", "Admin", "Model", "Recommendations", "Users"],
                                 icons=['house', 'file-earmark-music-fill', 'pc', 'boombox','journal'],
                                 menu_icon="app-indicator", default_index=0,
                                 styles={
@@ -561,6 +610,8 @@ if choose == "Home":
                 
                 st.success("Logged In as {}".format(username))
                 st.session_state.login_success=True
+                
+                
 
 				# task = st.selectbox("Task",["Add Post","Analytics","Profiles"])
 				# if task == "Add Post":
@@ -591,64 +642,95 @@ if choose == "Home":
     
         
 
-elif choose == "Dataset":
-    st.markdown("<br>", unsafe_allow_html=True)
-    """
-    ## Spotify Million Playlist Dataset
-    -----------------------------------
-    For this project we are using The Million Playist Dataset, as it name implies, the dataset consists of one million playlists and each playlists 
-    contains n number of songs and some metadata is included as well such as name of the playlist, duration, number of songs, number of artists, etc.
+elif choose == "Admin":
+    st.subheader("Login")
+	# # 		# if password == '12345'
+    username = st.text_input("User Name")
+    password = st.text_input("User Password",type='password')
+    if st.button("Login"):
+            # if password == '12345':
+            #create_usertable()
+            hashed_pswd = make_hashes(password)
+            result = login_user(username,check_hashes(password,hashed_pswd))
+            
+                
+            if (username == 'admin') and (password == 'admin'):
+                
+                st.success("Logged In as {}".format(username))
+                #st.session_state.login_success=True
+                
+                
+
+				# task = st.selectbox("Task",["Add Post","Analytics","Profiles"])
+				# if task == "Add Post":
+				# 	st.subheader("Add Your Post")
+
+				# elif task == "Analytics":
+				# 	st.subheader("Analytics")
+				# elif task == "Profiles":
+				# 	st.subheader("User Profiles")
+				# 	user_result = view_all_users()
+				# 	clean_db = pd.DataFrame(user_result,columns=["Username","Password"])
+				# 	st.dataframe(clean_db)
+            else:
+                st.warning("Incorrect Username/Password")
+    # st.markdown("<br>", unsafe_allow_html=True)
+    # """
+    # ## Spotify Million Playlist Dataset
+    # -----------------------------------
+    # For this project we are using The Million Playist Dataset, as it name implies, the dataset consists of one million playlists and each playlists 
+    # contains n number of songs and some metadata is included as well such as name of the playlist, duration, number of songs, number of artists, etc.
     
-    It is created by sampling playlists from the billions of playlists that Spotify users have created over the years. 
-    Playlists that meet the following criteria were selected at random:
-    - Created by a user that resides in the United States and is at least 13 years old
-    - Was a public playlist at the time the MPD was generated
-    - Contains at least 5 tracks
-    - Contains no more than 250 tracks
-    - Contains at least 3 unique artists
-    - Contains at least 2 unique albums
-    - Has no local tracks (local tracks are non-Spotify tracks that a user has on their local device
-    - Has at least one follower (not including the creator
-    - Was created after January 1, 2010 and before December 1, 2017
-    - Does not have an offensive title
-    - Does not have an adult-oriented title if the playlist was created by a user under 18 years of age
+    # It is created by sampling playlists from the billions of playlists that Spotify users have created over the years. 
+    # Playlists that meet the following criteria were selected at random:
+    # - Created by a user that resides in the United States and is at least 13 years old
+    # - Was a public playlist at the time the MPD was generated
+    # - Contains at least 5 tracks
+    # - Contains no more than 250 tracks
+    # - Contains at least 3 unique artists
+    # - Contains at least 2 unique albums
+    # - Has no local tracks (local tracks are non-Spotify tracks that a user has on their local device
+    # - Has at least one follower (not including the creator
+    # - Was created after January 1, 2010 and before December 1, 2017
+    # - Does not have an offensive title
+    # - Does not have an adult-oriented title if the playlist was created by a user under 18 years of age
     
-    As you can imagine a million anything is too large to handle and we are going to be using 2% of the data (20,000 playlists) to create the models 
-    and then using it to train the model on AWS SageMaker and then use it to make predictions by exposing the model as a REST API Endpoint.
+    # As you can imagine a million anything is too large to handle and we are going to be using 2% of the data (20,000 playlists) to create the models 
+    # and then using it to train the model on AWS SageMaker and then use it to make predictions by exposing the model as a REST API Endpoint.
    
-    ### Enhancing the data:
-    Since this dataset is released by Spotify, it already includes a track id that can be used to generate API calls and 
-    access the multiple information that is provided from Spotify for a given song, artist or user.
-    These are some of the features that are available to us for each song and we are going to use them to enhance our dataset and to help matching 
-    the user's favorite playlist.
+    # ### Enhancing the data:
+    # Since this dataset is released by Spotify, it already includes a track id that can be used to generate API calls and 
+    # access the multiple information that is provided from Spotify for a given song, artist or user.
+    # These are some of the features that are available to us for each song and we are going to use them to enhance our dataset and to help matching 
+    # the user's favorite playlist.
     
-    ##### Some of the available features are the following, they are measured mostly in a scale of 0-1:
-    - **acousticness:** Confidence measure from 0.0 to 1.0 on if a track is acoustic.   
-    - **danceability:** Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, 
-    rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.   
-    - **energy:** Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, 
-    energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. 
-    Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.   
-    - **instrumentalness:** Predicts whether a track contains no vocals. “Ooh” and “aah” sounds are treated as instrumental in this context. Rap or 
-    spoken word tracks are clearly “vocal”. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. 
-    Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.   
-    - **liveness:** Detects the presence of an audience in the recording. Higher liveness values represent an increased probability 
-    that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.   
-    - **loudness:** The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful 
-    for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical 
-    strength (amplitude). Values typical range between -60 and 0 db.   
-    - **speechiness:** Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording 
-    (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably 
-    made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in 
-    sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.   
-    - **tempo:** The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the 
-    speed or pace of a given piece and derives directly from the average beat duration.   
-    - **valence:** A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound 
-    more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).   
+    # ##### Some of the available features are the following, they are measured mostly in a scale of 0-1:
+    # - **acousticness:** Confidence measure from 0.0 to 1.0 on if a track is acoustic.   
+    # - **danceability:** Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, 
+    # rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.   
+    # - **energy:** Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, 
+    # energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. 
+    # Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.   
+    # - **instrumentalness:** Predicts whether a track contains no vocals. “Ooh” and “aah” sounds are treated as instrumental in this context. Rap or 
+    # spoken word tracks are clearly “vocal”. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. 
+    # Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.   
+    # - **liveness:** Detects the presence of an audience in the recording. Higher liveness values represent an increased probability 
+    # that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.   
+    # - **loudness:** The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful 
+    # for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical 
+    # strength (amplitude). Values typical range between -60 and 0 db.   
+    # - **speechiness:** Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording 
+    # (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably 
+    # made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in 
+    # sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.   
+    # - **tempo:** The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the 
+    # speed or pace of a given piece and derives directly from the average beat duration.   
+    # - **valence:** A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound 
+    # more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).   
     
-    Information about features: [link](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features)
-    """
-    st.markdown("<br>", unsafe_allow_html=True)
+    # Information about features: [link](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features)
+    # """
+    # st.markdown("<br>", unsafe_allow_html=True)
 
 
 elif choose == "Model":
@@ -665,7 +747,6 @@ elif choose == "Model":
 
 
 elif choose == "Recommendations":
-
     st.session_state.app_mode = 'model'
     if st.session_state.app_mode == 'model' and st.session_state.login_success:
         model_page()
@@ -740,30 +821,34 @@ elif choose == "Recommendations":
     # else:
     #     st.write('---')
 
-elif choose == "Conclusions":
-    st.markdown("<br>", unsafe_allow_html=True)
-    """
-    ## Conclusions:
-    --------------
-    As part of this Final project, together we learnt different aspects of building an end-to-end big data project - from development to deployment!            
+elif choose == "Users":
+    st.subheader("User Profiles")
+    user_result = view_all_users()
+    #clean_db = pd.DataFrame(user_result,columns=["Username","Token","count"])
+    st.dataframe(user_result)
+    # st.markdown("<br>", unsafe_allow_html=True)
+    # """
+    # ## Conclusions:
+    # --------------
+    # As part of this Final project, together we learnt different aspects of building an end-to-end big data project - from development to deployment!            
 
     
-    This project touched on various aspects of depvelopment such as - 
-    - **Data Collection** — Even though the core dataset we used was provided by Spotify, we still needed to go and look for other data sources 
-    to enhance the data and combine it with the core data set. This activity involved an API setup and parsing the dataset.
-    - **Unsupervised Learning** — We decided to take an innovative approach where we are aiming for novelty where a given user is predicted into a 
-    cluster and then computing a distance to recommend a set of tracks. Exploring different families of cluster algorithms and learning about 
-    advantages and disadvantages to make the best selection as well as deciding which measure distance makes the most sense for our purposes.<br>
-    - **Efficient Data Processing** — Midway through the project when we wanted to use the full 1M dataset we realized that it represents its own challenge and 
-    we needed to rework the code to be able to not only run our analysis but to actually finalize the analysis. One thing that was a life saver was to develop 
-    an SQLite database where the computing was reduced by 98%. Also by leveraging multiple API calls we were able to reduce the compute time from 40hours to 30minutes. 
-    When dealing with this big of a dataset you need to get creative and write very efficient code.
-    - **Big Data** — Dealing with such a large playlist data requires a lot of computing power. We relied on AWS services to train our model and deploy it as an endpoint.
-    - **Deployment** — Nowadays, UX and overall Frontend is taken for granted but to actually put something up with models running in the background is not easy. 
-    In this application we made a Streamlit app that can be deployed to a server and deployed to a web app.
+    # This project touched on various aspects of depvelopment such as - 
+    # - **Data Collection** — Even though the core dataset we used was provided by Spotify, we still needed to go and look for other data sources 
+    # to enhance the data and combine it with the core data set. This activity involved an API setup and parsing the dataset.
+    # - **Unsupervised Learning** — We decided to take an innovative approach where we are aiming for novelty where a given user is predicted into a 
+    # cluster and then computing a distance to recommend a set of tracks. Exploring different families of cluster algorithms and learning about 
+    # advantages and disadvantages to make the best selection as well as deciding which measure distance makes the most sense for our purposes.<br>
+    # - **Efficient Data Processing** — Midway through the project when we wanted to use the full 1M dataset we realized that it represents its own challenge and 
+    # we needed to rework the code to be able to not only run our analysis but to actually finalize the analysis. One thing that was a life saver was to develop 
+    # an SQLite database where the computing was reduced by 98%. Also by leveraging multiple API calls we were able to reduce the compute time from 40hours to 30minutes. 
+    # When dealing with this big of a dataset you need to get creative and write very efficient code.
+    # - **Big Data** — Dealing with such a large playlist data requires a lot of computing power. We relied on AWS services to train our model and deploy it as an endpoint.
+    # - **Deployment** — Nowadays, UX and overall Frontend is taken for granted but to actually put something up with models running in the background is not easy. 
+    # In this application we made a Streamlit app that can be deployed to a server and deployed to a web app.
 
-    """
-    st.markdown("<br>", unsafe_allow_html=True)
+    # """
+    # st.markdown("<br>", unsafe_allow_html=True)
 
 # def playlist_page():
 #     st.subheader("User Playlist")
