@@ -30,10 +30,10 @@ def check_hashes(password,hashed_text):
 	return False
 
 
-cols = ['Username', 'Password', 'Count', 'Timestamp']
+cols = ['Username', 'Password', 'Count', 'Timestamp', 'loved_it', 'like_it', 'okay', 'hate_it', 'recently_searched_song']
 lst = []
-def add_userdata(username,password,count,time):
-    lst.append([username,password,count,time])
+def add_userdata(username,password,count,time, loved_it, like_it, okay, hate_it, recently_searched_song):
+    lst.append([username,password,count,time, loved_it, like_it, okay, hate_it, recently_searched_song])
     path = 'new.csv'
 
     # Check whether the specified path exists or not
@@ -63,11 +63,11 @@ def view_all_users():
     a = pd.read_csv("new.csv")
     return a
 
-def update_count(username):
-    a = pd.read_csv("new.csv")
-    cond = (a['Username'] == username)
-    a.loc[cond,'Count'] = a['Count'] - 1
-    a.to_csv("new.csv", index = False)
+# def update_count(username):
+#     a = pd.read_csv("new.csv")
+#     cond = (a['Username'] == username)
+#     a.loc[cond,'Count'] = a['Count'] - 1
+#     a.to_csv("new.csv", index = False)
     
 def read_count(username):
     a = pd.read_csv("new.csv")
@@ -118,6 +118,21 @@ if 'user_cluster_all_fig' not in st.session_state:
 if 'user_cluster_single_fig' not in st.session_state:
     st.session_state.user_cluster_single_fig = None
 
+# feeback buttons count increment
+if 'loved_it_count' not in st.session_state:
+    st.session_state.loved_it_count = 0
+if 'like_it_count' not in st.session_state:
+    st.session_state.like_it_count = 0
+if 'okay_count' not in st.session_state:
+    st.session_state.okay_count = 0
+if 'hate_it_count' not in st.session_state:
+    st.session_state.hate_it_count = 0
+if 'recently_searched_song' not in st.session_state:
+    st.session_state.recently_searched_song = ''
+
+if 'username_loggedin' not in st.session_state:
+    st.session_state.username_loggedin = ''
+
 if 'app_mode' not in st.session_state:
     st.session_state.app_mode = 'home'
 if 'is_admin' not in st.session_state:
@@ -160,9 +175,10 @@ def update_playlist_url():
     st.session_state.example_url = st.session_state.playlist_url
 
 if 'example_song_name' not in st.session_state:
-    st.session_state.example_song_name = 'Example: Save your Tears'
+    st.session_state.example_song_name = 'Example: Stairway to Heaven'
 def update_song_name():
     st.session_state.example_song_name = st.session_state.song_name
+    add_recently_searched_song(st.session_state.song_name)
 
 def add_feedback_df(feedback_df):
     feedback_db = User_FeedbackDB()
@@ -189,6 +205,41 @@ def add_feedback(feedback):
     feedback_db.add_user_feedback(fb_list)
     del feedback_db
     st.session_state.got_feedback = True
+
+def increment_loved_it_count():
+    st.session_state.loved_it_count += 1
+    a = pd.read_csv("new.csv")
+    cond = (a['Username'] == st.session_state.username_loggedin)
+    a.loc[cond,'loved_it'] = a['loved_it'] + 1
+    a.to_csv("new.csv", index = False)
+def increment_like_it_count():
+    st.session_state.like_it_count += 1
+    a = pd.read_csv("new.csv")
+    cond = (a['Username'] == st.session_state.username_loggedin)
+    a.loc[cond,'liked_it'] = a['liked_it'] + 1
+    a.to_csv("new.csv", index = False)
+def increment_okay_count():
+    st.session_state.okay_count += 1
+    a = pd.read_csv("new.csv")
+    cond = (a['Username'] == st.session_state.username_loggedin)
+    a.loc[cond,'okay'] = a['okay'] + 1
+    a.to_csv("new.csv", index = False)
+def increment_hate_it_count():
+    st.session_state.hate_it_count += 1
+    a = pd.read_csv("new.csv")
+    cond = (a['Username'] == st.session_state.username_loggedin)
+    a.loc[cond,'hate_it'] = a['hate_it'] + 1
+    a.to_csv("new.csv", index = False)
+
+def add_recently_searched_song(song_name_searched):
+
+    a = pd.read_csv("new.csv")
+
+    userindex = a.index[a['Username']==st.session_state.username_loggedin]
+
+    a.loc[userindex, ['recently_searched_song']] = song_name_searched
+
+    a.to_csv("new.csv", index = False)
 
 def playlist_page():
     st.subheader("User Playlist")
@@ -324,13 +375,13 @@ def model_page():
                     with user_fbholder:
                         c1, c2, c3, c4 = st.columns((1, 1, 1, 1))
                         with c1:
-                            st.button("Love it", key='love', on_click=add_feedback, args=('Love it',))
+                            st.button("Love it", key='love', on_click=increment_loved_it_count, args=('Love it',))
                         with c2:
-                            st.button("Like it", key='like', on_click=add_feedback, args=('Like it',))
+                            st.button("Like it", key='like', on_click=increment_like_it_count, args=('Like it',))
                         with c3:
-                            st.button("Okay", key='okay', on_click=add_feedback, args=('Okay',))
+                            st.button("Okay", key='okay', on_click=increment_okay_count, args=('Okay',))
                         with c4:
-                            st.button("Hate it", key='hate', on_click=add_feedback, args=('Hate it',))
+                            st.button("Hate it", key='hate', on_click=increment_hate_it_count, args=('Hate it',))
 
                 with fb_plotholder:
                     try:
@@ -610,6 +661,7 @@ if choose == "Home":
                 
                 st.success("Logged In as {}".format(username))
                 st.session_state.login_success=True
+                st.session_state.username_loggedin=username
                 
                 
 
@@ -634,7 +686,7 @@ if choose == "Home":
 
         if st.button("Signup"):
         #create_usertable()
-            add_userdata(new_user,make_hashes(new_password), 10, datetime.datetime.now())
+            add_userdata(new_user,make_hashes(new_password), 0, datetime.datetime.now(), 0, 0, 0, 0, "")
             st.success("You have successfully created a valid Account")
             st.info("Go to Login Menu to login")
 
