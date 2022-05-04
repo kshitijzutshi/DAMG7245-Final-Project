@@ -30,10 +30,10 @@ def check_hashes(password,hashed_text):
 	return False
 
 
-cols = ['Username', 'Password', 'Count', 'Timestamp', 'loved_it', 'like_it', 'okay', 'hate_it', 'recently_searched_song']
+cols = ['Username', 'Password', 'Count', 'Timestamp', 'loved_it', 'like_it', 'okay', 'hate_it', 'recently_searched_song', 'email_id', 'rec_song_uri']
 lst = []
-def add_userdata(username,password,count,time, loved_it, like_it, okay, hate_it, recently_searched_song):
-    lst.append([username,password,count,time, loved_it, like_it, okay, hate_it, recently_searched_song])
+def add_userdata(username,password,count,time, loved_it, like_it, okay, hate_it, recently_searched_song, email_id, rec_song_uri):
+    lst.append([username,password,count,time, loved_it, like_it, okay, hate_it, recently_searched_song, email_id, rec_song_uri])
     path = 'new.csv'
 
     # Check whether the specified path exists or not
@@ -171,6 +171,19 @@ def increment_usage_count():
     a.loc[cond,'Count'] = a['Count'] + 1
     a.to_csv("new.csv", index = False)
 
+def add_uri(track_uri):
+    a = pd.read_csv("new.csv")
+    cond = (a['Username'] == st.session_state.username_loggedin)
+    track_uri_str = ",".join(track_uri)
+    a.loc[cond,'rec_song_uri'] = track_uri_str 
+
+
+    # for uri in track_uri:
+    #     uri_link = "https://open.spotify.com/embed/track/" + uri + "?utm_source=generator&theme=0"
+    #     a.loc[cond,'rec_song_uri'] = uri_link
+    a.to_csv("new.csv", index = False)
+
+
 if 'login_success' not in st.session_state:
     st.session_state.login_success = False
 
@@ -226,7 +239,7 @@ def increment_like_it_count():
     st.session_state.like_it_count += 1
     a = pd.read_csv("new.csv")
     cond = (a['Username'] == st.session_state.username_loggedin)
-    a.loc[cond,'liked_it'] = a['liked_it'] + 1
+    a.loc[cond,'like_it'] = a['like_it'] + 1
     a.to_csv("new.csv", index = False)
 def increment_okay_count():
     st.session_state.okay_count += 1
@@ -478,6 +491,7 @@ def model_page():
                             spr.log_output = log_output
                             
                             st.session_state.rec_uris = spr.get_song_recommendation_from_song_name(n=10)
+                            # add_uri(st.session_state.rec_uris)
                             # st.session_state.genre_wordcloud_fig = spr.get_genre_wordcloud_fig()
                             # st.session_state.playlist_wordcloud_fig = spr.get_playlist_wordcloud_fig()
                             # st.session_state.user_cluster_all_fig = spr.get_user_cluster_all_fig()
@@ -488,6 +502,7 @@ def model_page():
                     log_output('Showing already found recommendations')
 
                 insert_songs(rec_songsholder, st.session_state.rec_uris)
+                add_uri(st.session_state.rec_uris)
 
 
         with st.expander("Here's how to find any Playlist URL in Spotify"):
@@ -695,10 +710,11 @@ if choose == "Home":
         st.subheader("Create New Account")
         new_user = st.text_input("Username")
         new_password = st.text_input("Password",type='password')
+        new_email_id = st.text_input("email_id")
 
         if st.button("Signup"):
         #create_usertable()
-            add_userdata(new_user,make_hashes(new_password), 0, datetime.datetime.now(), 0, 0, 0, 0, "")
+            add_userdata(new_user,make_hashes(new_password), 0, datetime.datetime.now(), 0, 0, 0, 0, "", new_email_id, '')
             st.success("You have successfully created a valid Account")
             st.info("Go to Login Menu to login")
 
