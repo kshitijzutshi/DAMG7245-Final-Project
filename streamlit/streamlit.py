@@ -161,6 +161,13 @@ if 'ml_model' not in st.session_state:
 if 'count_current' not in st.session_state:
     st.session_state.count_current = 0
 
+def increment_usage_count():
+    st.session_state.count_current += 1
+    a = pd.read_csv("new.csv")
+    cond = (a['Username'] == st.session_state.username_loggedin)
+    a.loc[cond,'Count'] = a['Count'] + 1
+    a.to_csv("new.csv", index = False)
+
 if 'login_success' not in st.session_state:
     st.session_state.login_success = False
 
@@ -261,11 +268,13 @@ def get_recommendations(rec_type):
     st.session_state.got_feedback = False
     st.session_state.app_mode = 'recommend'
     st.session_state.rec_type = rec_type
+    increment_usage_count()
 def get_song_name_recommendations(rec_type):
     st.session_state.got_rec = False
     st.session_state.got_feedback = False
     st.session_state.app_mode = 'recommend'
     st.session_state.rec_type = rec_type
+    increment_usage_count()
 
 def insert_songs(placeholder, track_uris):
     with placeholder.container():
@@ -375,13 +384,13 @@ def model_page():
                     with user_fbholder:
                         c1, c2, c3, c4 = st.columns((1, 1, 1, 1))
                         with c1:
-                            st.button("Love it", key='love', on_click=increment_loved_it_count, args=('Love it',))
+                            st.button("Love it", key='love', on_click=increment_loved_it_count)
                         with c2:
-                            st.button("Like it", key='like', on_click=increment_like_it_count, args=('Like it',))
+                            st.button("Like it", key='like', on_click=increment_like_it_count)
                         with c3:
-                            st.button("Okay", key='okay', on_click=increment_okay_count, args=('Okay',))
+                            st.button("Okay", key='okay', on_click=increment_okay_count)
                         with c4:
-                            st.button("Hate it", key='hate', on_click=increment_hate_it_count, args=('Hate it',))
+                            st.button("Hate it", key='hate', on_click=increment_hate_it_count)
 
                 with fb_plotholder:
                     try:
