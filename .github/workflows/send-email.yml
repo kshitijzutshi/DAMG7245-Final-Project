@@ -1,7 +1,8 @@
 name: Weekly Spotify Recommendation
     
 on:
-  - push
+  schedule:
+    - cron: "0 */3 * * *"
 
 jobs:
   build:
