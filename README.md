@@ -55,19 +55,78 @@ The dataset contains 1,000,000 playlists, including playlist titles and track ti
 5. Build a web application using streamlit for showcasing the results.
 
 
-Milestones
+# Milestones
+
+| Time Frame  | Tasks                                                               |
+|:-----------:|:-------------------------------------------------------------------:|
+| Day 1 - 5   | Data processing, EDA, Model selection                               |
+| Day 5 - 10  | Deployment of Models, Setup of Data pipeline, Streamlit Integration |
+| Day 10 - 15 | System integration, App enhancements, Testing and documentation     |
 
 
-Time Frame
+# Project Folder Structure
 
-Day 1 - 5
-Data processing, EDA, Model selection
-
-Day 5 - 10
-Deployment of Models, Setup of Data pipeline, Streamlit Integration
-
-Day 10 - 15
-System integration, Testing and documentation
+```
+📦workflows
+ ┣ 📜close-issue.yml
+ ┣ 📜get-weekly-top10.yaml
+ ┣ 📜hello.yaml
+ ┣ 📜new_top50.yml
+ ┣ 📜send-email.yml
+ ┗ 📜testing_workflow.yml
+ 📦code
+ ┣ 📜Data_Preprocessing.ipynb
+ ┣ 📜Exploratory Data Analysis.ipynb
+ ┣ 📜Get_MPD_Data.ipynb
+ ┣ 📜kmeans-sagemaker.ipynb
+ ┣ 📜model_selection_visualization.ipynb
+ ┣ 📜Playlist_Recommendation.ipynb
+ ┣ 📜read_spotify_million_playlists.py
+ ┗ 📜test.ipynb
+ 📦data
+ ┣ 📂smp_data
+ ┣ 📜2022_19_19_23_29_24_MPD_Extended.csv
+ ┣ 📜2022_19_19_23_29_40_playlists_20000.json
+ ┣ 📜2022_20_20_00_58_35_Playlist_Feats_20000.csv
+ ┣ 📜spotify_20K_playlists.db
+ ┗ 📜MPD.csv
+ 📦htmlcov
+ ┣ 📜coverage_html.js
+ ┣ 📜d_36f028580bb02cc8_locust_test_py.html
+ ┣ 📜d_36f028580bb02cc8_test_songname_py.html
+ ┣ 📜favicon_32.png
+ ┣ 📜index.html
+ ┣ 📜keybd_closed.png
+ ┣ 📜keybd_open.png
+ ┣ 📜status.json
+ ┗ 📜style.css
+ 📦images
+ 📦model
+ ┣ 📜openTSNETransformer.sav
+ ┗ 📜StdScaler.sav
+ 📦streamlit
+ ┣ 📂assets
+ ┃ ┣ 📂images
+ ┃ ┃ ┣ 📜login.gif
+ ┃ ┃ ┣ 📜logo.png
+ ┃ ┃ ┣ 📜settings.png
+ ┃ ┃ ┣ 📜spotify.jpg
+ ┃ ┃ ┣ 📜spotify.png
+ ┃ ┃ ┣ 📜spotify_get_playlist_uri.png
+ ┃ ┃ ┗ 📜twitter-logo.png
+ ┃ ┣ 📜.DS_Store
+ ┃ ┗ 📜styles.css
+ ┣ 📜new.csv
+ ┣ 📜spotipy_client.py
+ ┗ 📜streamlit.py
+ 📦test
+ ┣ 📜locust_test.py
+ ┣ 📜test_songname.py
+ ┗ 📜tracks_10.csv
+ ┣ 📜requirements.txt
+ ┣ 📜requirements_dev.txt
+ ┗ 📜send_email.py
+ ```
 
 # Deployment Details
 
@@ -92,6 +151,17 @@ User Interface will be built using Streamlit and deployed on streamlit cloud.
 
 ![image](https://user-images.githubusercontent.com/13203059/163527610-3868cb59-a79f-4d8c-abb1-bd860f2eac22.png)
 
+# Contributions
+
+| Contributor           | GitHub Issues                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Status     | % Contribution |
+|:---------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------:|:--------------:|
+| Kshitij Zutshi        | ![Issue #4](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/4), ![Issue #10](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/10), ![Issue #9](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/9), ![Issue #6](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/5), ![Issue #6](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/6), ![Issue #17](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/17), ![Issue #23](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/23), ![Issue #21](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/21), ![Issue #26](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/26), ![Issue #27](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/27) | ✅ Complete | 40%            |
+| Priyanka Dilip Shinde | ![Issue #1](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/1), ![Issue #5](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/5), ![Issue #6](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/6), ![Issue #12](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/12), ![Issue #24](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/24), ![Issue #7](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/7), ![Issue #20](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/20)                                                                                                                                                                                                                                                    | ✅ Complete | 30%            |
+| Dwithika Shetty       | ![Issue #2](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/2), ![Issue #6](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/5), ![Issue #11](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/11), ![Issue #22](https://github.com/kshitijzutshi/DAMG7245-Final-Project/issues/22)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | ✅ Complete | 30%            |
+
+
+
+
 # Reference 
 
 [How to build a music recommender system. | Towards Data Science](https://towardsdatascience.com/how-to-build-an-amazing-music-recommendation-system-4cce2719a572)
@@ -101,13 +171,6 @@ User Interface will be built using Streamlit and deployed on streamlit cloud.
 [Music APIs - A List of Free and Public APIs (the-api-collective.com)](https://the-api-collective.com/category/music)
 
 [AIcrowd | Spotify Million Playlist Dataset Challenge | Challenges](https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge)
-
-
-
-<!-- <a href = "https://github.com/kshitijzutshi/DAMG7245-Final-Project/graphs/contributors">
-<img src = "https://contrib.rocks/image?repo = GitHub_username/repository_name"/>
-</a> -->
-
 
 
 
