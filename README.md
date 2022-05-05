@@ -67,7 +67,7 @@ The dataset contains 1,000,000 playlists, including playlist titles and track ti
 # Project Folder Structure
 
 ```
-📦workflows
+📦workflows  ➡ This folder contains all the workflows related to github actions
  ┣ 📜close-issue.yml
  ┣ 📜get-weekly-top10.yaml
  ┣ 📜hello.yaml
@@ -78,19 +78,19 @@ The dataset contains 1,000,000 playlists, including playlist titles and track ti
  ┣ 📜Data_Preprocessing.ipynb
  ┣ 📜Exploratory Data Analysis.ipynb
  ┣ 📜Get_MPD_Data.ipynb
- ┣ 📜kmeans-sagemaker.ipynb
+ ┣ 📜kmeans-sagemaker.ipynb   ➡ This notebook runs on the AWS SageMaker Notebook instance to deploy KMeans
  ┣ 📜model_selection_visualization.ipynb
  ┣ 📜Playlist_Recommendation.ipynb
  ┣ 📜read_spotify_million_playlists.py
  ┗ 📜test.ipynb
- 📦data
+ 📦data   ➡ This folder contains the data preporcessing results from the Original dataset
  ┣ 📂smp_data
  ┣ 📜2022_19_19_23_29_24_MPD_Extended.csv
  ┣ 📜2022_19_19_23_29_40_playlists_20000.json
  ┣ 📜2022_20_20_00_58_35_Playlist_Feats_20000.csv
  ┣ 📜spotify_20K_playlists.db
  ┗ 📜MPD.csv
- 📦htmlcov
+ 📦htmlcov   ➡ Extensive Pytest and code coverage report
  ┣ 📜coverage_html.js
  ┣ 📜d_36f028580bb02cc8_locust_test_py.html
  ┣ 📜d_36f028580bb02cc8_test_songname_py.html
@@ -117,9 +117,9 @@ The dataset contains 1,000,000 playlists, including playlist titles and track ti
  ┃ ┣ 📜.DS_Store
  ┃ ┗ 📜styles.css
  ┣ 📜new.csv
- ┣ 📜spotipy_client.py
- ┗ 📜streamlit.py
- 📦test
+ ┣ 📜spotipy_client.py   ➡ Contains all the helper functions needed in the Streamlit application
+ ┗ 📜streamlit.py ➡ This is where it all comes together, the final streamlit application code is here
+ 📦test   ➡ This folder contains the testing scripts - PyTest, coverage and Locust Load testing
  ┣ 📜locust_test.py
  ┣ 📜test_songname.py
  ┗ 📜tracks_10.csv
