@@ -13,7 +13,7 @@
 ![](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 ![](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 
-# CLaaT Document
+# CLaaT Document here
 
 [Access the Claat document here](https://codelabs-preview.appspot.com/?file_id=12z0C4Hw5840SwWBf6vqpAS81ir7TEm-NcLhjHyZOQW4#12) 🚀
 
