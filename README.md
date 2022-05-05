@@ -148,13 +148,9 @@ The Spotify music recommendation app has been deployed on Google Cloud Compute E
 ![image](https://user-images.githubusercontent.com/13203059/166855338-1948ace0-9e2d-4047-b3b7-c0f04b22b8ec.png)
 
 
+# Demo Walk through Video
 
-
-# User Interface Design Plan
-
-User Interface will be built using Streamlit and deployed on streamlit cloud.
-
-![image](https://user-images.githubusercontent.com/13203059/163527610-3868cb59-a79f-4d8c-abb1-bd860f2eac22.png)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/MqxsdbIJzzc/0.jpg)](https://www.youtube.com/watch?v=MqxsdbIJzzc)
 
 
 # Contributions
