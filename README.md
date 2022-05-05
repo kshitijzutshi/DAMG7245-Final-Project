@@ -287,10 +287,6 @@ For the scope of the project we have incorporated the following Github Actions w
  ┗ 📜send_email.py
  ```
 
-# Deployment Details
-
-The Spotify music recommendation app has been deployed on Google Cloud Compute Engine and Streamlit ☁
-
 
 # Project Demo Walk through Video
 
