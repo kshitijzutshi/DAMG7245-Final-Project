@@ -143,6 +143,11 @@ The Spotify music recommendation app has been deployed on Google Cloud Compute E
 
 ![image](https://user-images.githubusercontent.com/13203059/166744789-e49f6682-7246-4757-84c6-d0a06e6b36c9.png)
 
+3. Weekly Spotify Recommendations based on last searched song by user - CRON workflow
+
+![image](https://user-images.githubusercontent.com/13203059/166855338-1948ace0-9e2d-4047-b3b7-c0f04b22b8ec.png)
+
+
 
 
 # User Interface Design Plan
@@ -150,6 +155,7 @@ The Spotify music recommendation app has been deployed on Google Cloud Compute E
 User Interface will be built using Streamlit and deployed on streamlit cloud.
 
 ![image](https://user-images.githubusercontent.com/13203059/163527610-3868cb59-a79f-4d8c-abb1-bd860f2eac22.png)
+
 
 # Contributions
 
