@@ -164,6 +164,63 @@ Instead of relying on large chunck of code to read/write from GCS Bucket, we hav
 
         sudo usermod -a -G fuse $USER
         exit
+#### 2.5 Start the Streamlit Server
+
+* Change directory into the GCS Bucket after doing Step 2.4 and checkout to Streamlit folder, now start the streamlit server
+    ```
+    streamlit run streamlit.py
+    ```
+* This will start the server on the VM and will be accessible to anyone online
+
+### 3. Github Actions Workflow & Testing
+
+Testing the application using PyTest cases, helped us fix many flaws in the application, to acheive this we used the following packages:
+
+#### 3.1 Code coverage and Pytest unit testing
+
+First install PyTest and Coverage package as - 
+
+```
+pip install pytest
+pip install coverage
+```
+Now that we have these packages installed, we can get the complete coverage and Pytest report by running the following line(in the project root directory) - 
+```
+coverage run -m pytest
+```
+
+#### 3.2 Application Load testing using Locust Server
+
+Locust is an open source load testing tool. It defines user behaviour with Python code, 
+and swarm your system with millions of simultaneous users. 
+
+dependencies: **locust**
+
+```
+pip install locust
+```
+
+Run Locust with command:
+
+```
+    locust -f locust_test.py
+``` 
+#### 3.3 Github Action Workflows 
+
+
+For the scope of the project we have incorporated the following Github Actions workflows - 
+
+1. Close an Issue if the comment says "close issue"
+
+![close-issue-actions](https://user-images.githubusercontent.com/13203059/165130958-945f07cb-cfc2-43c2-a40f-7f5e790b8c25.gif)
+
+2. Pytest and coverage test on multiple versions of python and OS - On each push/pull request
+
+![image](https://user-images.githubusercontent.com/13203059/166744789-e49f6682-7246-4757-84c6-d0a06e6b36c9.png)
+
+3. Weekly Spotify Recommendations based on last searched song by user - CRON workflow
+
+![image](https://user-images.githubusercontent.com/13203059/166855338-1948ace0-9e2d-4047-b3b7-c0f04b22b8ec.png)
 
 
 # Project Folder Structure
@@ -235,22 +292,7 @@ Instead of relying on large chunck of code to read/write from GCS Bucket, we hav
 The Spotify music recommendation app has been deployed on Google Cloud Compute Engine and Streamlit ☁
 
 
-# Github Actions - Workflows
-
-1. Close an Issue if the comment says "close issue"
-
-![close-issue-actions](https://user-images.githubusercontent.com/13203059/165130958-945f07cb-cfc2-43c2-a40f-7f5e790b8c25.gif)
-
-2. Pytest and coverage test on multiple versions of python and OS - On each push/pull request
-
-![image](https://user-images.githubusercontent.com/13203059/166744789-e49f6682-7246-4757-84c6-d0a06e6b36c9.png)
-
-3. Weekly Spotify Recommendations based on last searched song by user - CRON workflow
-
-![image](https://user-images.githubusercontent.com/13203059/166855338-1948ace0-9e2d-4047-b3b7-c0f04b22b8ec.png)
-
-
-# Demo Walk through Video
+# Project Demo Walk through Video
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/MqxsdbIJzzc/0.jpg)](https://www.youtube.com/watch?v=MqxsdbIJzzc)
 
