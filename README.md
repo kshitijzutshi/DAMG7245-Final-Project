@@ -63,6 +63,108 @@ The dataset contains 1,000,000 playlists, including playlist titles and track ti
 | Day 5 - 10  | Deployment of Models, Setup of Data pipeline, Streamlit Integration |
 | Day 10 - 15 | System integration, App enhancements, Testing and documentation     |
 
+# Project Setup
+
+The project consists of 4 major components - 
+
+- The model training Pipeline
+- The model Inference Pipeline
+- Music recommendation system Pipeline
+- Github Actions Workflow & Testing
+
+![Final_Project_pipeline](https://user-images.githubusercontent.com/13203059/166983390-f216e050-2f52-4bb0-95e8-175884256410.png)
+
+
+First Lets look at the Requirements for this project - 
+
+### Requirements
+
+```
+🐍 Python ➡ 3.9.7
+altair==4.1.0
+📊 matplotlib==3.5.0
+🔢 numpy==1.19.5
+⚒ openTSNE==0.6.1
+📄 pandas==1.2.5
+pip==21.3.1
+plotly==5.4.0
+🔀requests==2.25.1
+scikit-learn==0.24.2
+scipy==1.7.3
+🎶spotipy==2.19.0
+🖼streamlit==1.2.0
+seaborn==0.11.2
+tqdm==4.62.3
+urllib3==1.26.7
+wordcloud==1.8.1
+python-dotenv
+streamlit-aggrid
+streamlit-option-menu
+python-decouple
+tk
+opencv-python
+Pillow
+```
+### 1. Setting up Model Training and Inference Pipeline
+
+Following Youtube video created by us has the detailed walkthrough of how to go about the following stages:
+
+**Starting a AWS SageMaker Notebook Instance ➡ Training in the instance ➡ Deploying the model ➡ Using Lambda & API Gateway to expose model as API**
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/_ZriVJjLF6Q/0.jpg)](https://www.youtube.com/watch?v=_ZriVJjLF6Q)
+
+### 2. Music Recommendation system deployment on GCP
+
+#### 2.1 Before you begin
+* In the Google Cloud console, on the project selector page, select or create a Google Cloud project.
+* Make sure that billing is enabled for your Cloud project. Learn how to check if billing is enabled on a project.
+* Enable the Compute Engine API.
+
+#### 2.2 Create a Linux VM instance
+
+* In the Cloud console, go to the Create an instance page.
+* Go to Create an instance
+* In the Boot disk section, click Change to begin configuring your boot disk.
+* On the Public images tab, choose Ubuntu from the Operating system list.
+* Choose Ubuntu 20.04 LTS from the Version list.
+* In the Firewall section, select Allow HTTP traffic.
+* To create the VM, click Create.
+
+Allow a short period of time for the instance to start. After the instance is ready, it's listed on the VM instances page with a ✅.
+
+Compute Engine grants the user who creates the VM with the roles/compute.instanceAdmin role. Compute Engine also adds that user to the sudo group.
+
+#### 2.3 Connect to the VM instance
+
+Connect to an instance by using the Google Cloud console and completing the following steps. You're connected to the VM as the user you used to access the VM instances page.
+
+* In the Cloud console, go to the VM instances page.
+* Go to VM instances
+* In the list of virtual machine instances, click SSH in the row of the instance that you want to connect to.
+* SSH button next to instance name.
+
+#### 2.4 Connect to GCS Bucket by Mounting using GCSFuse
+
+Instead of relying on large chunck of code to read/write from GCS Bucket, we have used the GCSFuse feature to mount the 1 PetaByte GCS Bucket as a RAID Mount Drive partition in our VM Instance. Steps for the same are - 
+
+1.  Add the gcsfuse distribution URL as a package source and import its public
+    key:
+
+        export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+        echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+2.  Update the list of packages available and install gcsfuse.
+
+        sudo apt-get update
+        sudo apt-get install gcsfuse
+
+3.  (**Ubuntu before wily only**) Add yourself to the `fuse` group, then log
+    out and back in:
+
+        sudo usermod -a -G fuse $USER
+        exit
+
 
 # Project Folder Structure
 
